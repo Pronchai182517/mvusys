@@ -17,15 +17,17 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
 
   if (!isOpen) return null;
 
-  const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
+  const performLogin = async (targetEmail: string, targetName?: string) => {
+    if (!targetEmail) {
+      setErrorMsg('กรุณาระบุอีเมลสำหรับลงชื่อเข้าใช้');
+      return;
+    }
 
     setLoading(true);
     setErrorMsg('');
 
     try {
-      const res = await api.loginWithGoogle(email, name);
+      const res = await api.loginWithGoogle(targetEmail, targetName || name);
       if (res.success && res.data?.user) {
         onLoginSuccess(res.data.user);
         onClose();
@@ -38,9 +40,9 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
     setLoading(false);
   };
 
-  const handleQuickMcuLogin = () => {
-    setEmail('somchai@mcu.ac.th');
-    setName('พระสมชาย มหาปัญโญ (มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย)');
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    performLogin(email, name);
   };
 
   return (
@@ -60,7 +62,7 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
           </div>
           <h3 className="text-lg font-bold text-white">ลงชื่อเข้าใช้ด้วยบัญชี Google Workspace</h3>
           <p className="text-xs text-slate-400">
-            มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย (<span className="text-amber-400 font-mono">@mcu.ac.th</span>)
+            มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย (<span className="text-amber-400 font-mono">@mcu.ac.th</span> / <span className="text-emerald-400 font-mono">@gmail.com</span>)
           </p>
         </div>
 
@@ -73,13 +75,13 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
 
         <form onSubmit={handleLoginSubmit} className="space-y-4">
           <div>
-            <label className="text-xs text-slate-400">อีเมลบัญชีสถาบัน (@mcu.ac.th หรือ @mvu.ac.th)</label>
+            <label className="text-xs text-slate-400">อีเมลบัญชีสถาบันหรือ Gmail (@mcu.ac.th / @gmail.com)</label>
             <div className="relative mt-1">
               <Mail className="w-4 h-4 absolute left-3 top-2.5 text-slate-500" />
               <input
                 type="email"
                 required
-                placeholder="เช่น worachayo@mcu.ac.th"
+                placeholder="เช่น worachayo@mcu.ac.th หรือ user@gmail.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full bg-slate-900 border border-slate-700/80 rounded-xl pl-9 pr-3 py-2 text-xs text-white outline-none focus:border-mvu-500 font-mono"
@@ -88,7 +90,7 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
           </div>
 
           <div>
-            <label className="text-xs text-slate-400">ชื่อ-นามสกุล / ตำแหน่ง</label>
+            <label className="text-xs text-slate-400">ชื่อ-นามสกุล / ตำแหน่ง (ระบุหรือไม่ระดูก็ได้)</label>
             <input
               type="text"
               placeholder="เช่น พระพรชัย วรชโย (นักวิชาการคอมพิวเตอร์)"
@@ -103,9 +105,9 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
             <button
               type="button"
               onClick={() => {
-                const testEmail = email || 'worachayo@mcu.ac.th';
-                setEmail(testEmail);
-                handleLoginSubmit({ preventDefault: () => {} } as any);
+                const targetEmail = email || 'worachayo@mcu.ac.th';
+                setEmail(targetEmail);
+                performLogin(targetEmail, name);
               }}
               className="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs flex items-center justify-center gap-2.5 shadow-lg transition-all hover:scale-[1.02]"
             >
