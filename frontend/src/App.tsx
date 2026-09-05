@@ -7,6 +7,7 @@ import { ProjectsPage } from './pages/ProjectsPage';
 import { ResolutionsPage } from './pages/ResolutionsPage';
 import { KnowledgePage } from './pages/KnowledgePage';
 import { AIAgentPage } from './pages/AIAgentPage';
+import { GoogleLoginModal } from './components/GoogleLoginModal';
 import { User, UserRole } from './types';
 
 const USERS: Record<UserRole, User> = {
@@ -19,15 +20,30 @@ const USERS: Record<UserRole, User> = {
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [currentRole, setCurrentRole] = useState<UserRole>('admin');
+  const [customUser, setCustomUser] = useState<User | null>(null);
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
 
-  const currentUser = USERS[currentRole];
+  const currentUser = customUser || USERS[currentRole];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
       {/* Top Header */}
       <Header
         currentUser={currentUser}
-        onRoleChange={(newRole) => setCurrentRole(newRole)}
+        onRoleChange={(newRole) => {
+          setCustomUser(null);
+          setCurrentRole(newRole);
+        }}
+        onOpenGoogleLogin={() => setIsGoogleModalOpen(true)}
+      />
+
+      {/* Google Login Modal */}
+      <GoogleLoginModal
+        isOpen={isGoogleModalOpen}
+        onClose={() => setIsGoogleModalOpen(false)}
+        onLoginSuccess={(loggedInUser) => {
+          setCustomUser(loggedInUser);
+        }}
       />
 
       {/* Main Layout Container */}

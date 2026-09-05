@@ -5,6 +5,7 @@ import { Shield, Sparkles, Database, Bell, UserCheck } from 'lucide-react';
 interface HeaderProps {
   currentUser: User;
   onRoleChange: (role: UserRole) => void;
+  onOpenGoogleLogin: () => void;
 }
 
 const USERS_LIST: User[] = [
@@ -14,7 +15,7 @@ const USERS_LIST: User[] = [
   { id: 'usr-4', name: 'เจ้าหน้าที่ติดตามประเมินผล', role: 'tracking_officer', title: 'เจ้าหน้าที่ประกันคุณภาพ', department: 'งานประกันคุณภาพ', email: 'qa@mvu.ac.th' }
 ];
 
-export const Header: React.FC<HeaderProps> = ({ currentUser, onRoleChange }) => {
+export const Header: React.FC<HeaderProps> = ({ currentUser, onRoleChange, onOpenGoogleLogin }) => {
   return (
     <header className="glass-panel sticky top-0 z-30 px-6 py-3 border-b border-slate-800/80 flex items-center justify-between shadow-xl">
       {/* Title & Branding */}
@@ -34,11 +35,20 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, onRoleChange }) => 
       </div>
 
       {/* Controls & Role Switcher */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-3">
+        {/* Google @mcu.ac.th Login Button */}
+        <button
+          onClick={onOpenGoogleLogin}
+          className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-red-600/30 to-amber-600/30 hover:from-red-600/50 hover:to-amber-600/50 text-red-200 border border-red-500/40 text-xs font-semibold flex items-center gap-1.5 shadow-md transition-all hover:scale-105"
+        >
+          <span className="w-2 h-2 rounded-full bg-red-400 animate-ping"></span>
+          <span>Google @mcu.ac.th</span>
+        </button>
+
         {/* Role Selector Simulator */}
         <div className="flex items-center space-x-2 glass-card px-3 py-1.5 rounded-xl border border-slate-700/50">
           <Shield className="w-4 h-4 text-mvu-400" />
-          <span className="text-xs text-slate-400 hidden sm:inline">สิทธิ์ใช้งาน:</span>
+          <span className="text-xs text-slate-400 hidden sm:inline">สิทธิ์:</span>
           <select
             value={currentUser.role}
             onChange={(e) => onRoleChange(e.target.value as UserRole)}
@@ -53,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, onRoleChange }) => 
         </div>
 
         {/* User Badge */}
-        <div className="flex items-center space-x-3 border-l border-slate-800 pl-4">
+        <div className="flex items-center space-x-3 border-l border-slate-800 pl-3">
           <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-mvu-400 font-medium text-xs">
             <UserCheck className="w-4 h-4" />
           </div>

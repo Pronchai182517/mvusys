@@ -8,6 +8,7 @@ import resolutionsRouter from './routes/resolutions.js';
 import knowledgeRouter from './routes/knowledge.js';
 import dashboardRouter from './routes/dashboard.js';
 import aiAgentRouter from './routes/aiAgent.js';
+import authRouter from './routes/auth.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 // API Routes
+app.use('/api/auth', authRouter);
 app.use('/api/tasks', tasksRouter);
 app.use('/api/projects', projectsRouter);
 app.use('/api/resolutions', resolutionsRouter);

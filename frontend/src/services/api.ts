@@ -101,5 +101,15 @@ export const api = {
     });
     const data = await res.json();
     return data.data;
+  },
+
+  // Auth
+  async loginWithGoogle(email: string, name?: string) {
+    const res = await fetch(`${API_BASE}/auth/google-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name })
+    });
+    return await res.json();
   }
 };
