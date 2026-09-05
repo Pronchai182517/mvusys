@@ -138,5 +138,13 @@ export const api = {
       method: 'DELETE'
     });
     return await res.json();
+  },
+  async updateUserDepartmentScope(id: string, scopeData: { access_scope: 'all' | 'department_only'; allowed_departments: string[]; department?: string }) {
+    const res = await fetch(`${API_BASE}/auth/users/${id}/department-scope`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(scopeData)
+    });
+    return await res.json();
   }
 };

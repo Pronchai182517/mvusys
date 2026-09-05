@@ -5,6 +5,17 @@ const router = express.Router();
 
 const ALLOWED_DOMAINS = ['mcu.ac.th', 'mvu.ac.th', 'gmail.com'];
 
+export const DEPARTMENTS_LIST = [
+  'ส่วนงานบริหารองค์กร',
+  'สำนักงานผู้บริหาร',
+  'งานแผนและงบประมาณ',
+  'งานประกันคุณภาพและติดตามผล',
+  'งานสารบรรณและประชุม',
+  'ศูนย์เทคโนโลยีสารสนเทศ',
+  'งานการเงินและพัสดุ',
+  'มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย (ส่วนกลาง)'
+];
+
 // 1. Google OAuth / Quick Login
 router.post('/google-login', async (req, res) => {
   const { email, name, picture, googleId } = req.body;
@@ -23,7 +34,6 @@ router.post('/google-login', async (req, res) => {
     });
   }
 
-  // Find existing user or create
   const existingUser = mockData.users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
   if (existingUser) {
@@ -35,8 +45,15 @@ router.post('/google-login', async (req, res) => {
   }
 
   let role = 'executive';
+  let access_scope = 'all';
+  let allowed_departments = DEPARTMENTS_LIST;
+
   if (email.includes('admin') || email.includes('worachayo')) {
     role = 'admin';
+  } else if (email.includes('plan')) {
+    role = 'project_lead';
+    access_scope = 'department_only';
+    allowed_departments = ['งานแผนและงบประมาณ'];
   }
 
   const newProfile = {
@@ -45,8 +62,10 @@ router.post('/google-login', async (req, res) => {
     email,
     role,
     status: 'Active',
+    access_scope,
+    allowed_departments,
     title: domain === 'mcu.ac.th' ? 'บุคลากร มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย' : 'บุคลากร มหาวชิราลงกรณบาลีเถรวาทฯ',
-    department: domain === 'mcu.ac.th' ? 'มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย (@mcu.ac.th)' : 'ส่วนงานบริหารองค์กร'
+    department: domain === 'mcu.ac.th' ? 'มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย (ส่วนกลาง)' : 'ส่วนงานบริหารองค์กร'
   };
 
   mockData.users.push(newProfile);
@@ -61,7 +80,7 @@ router.post('/google-login', async (req, res) => {
   });
 });
 
-// 2. Register New Member with @mcu.ac.th Verification
+// 2. Register New Member with Department Selection
 router.post('/register', async (req, res) => {
   const { name, email, title, department, requestedRole } = req.body;
 
@@ -79,20 +98,23 @@ router.post('/register', async (req, res) => {
     });
   }
 
-  // Check if already registered
   const duplicate = mockData.users.find(u => u.email.toLowerCase() === email.toLowerCase());
   if (duplicate) {
     return res.status(400).json({ success: false, message: 'อีเมลนี้ถูกลงทะเบียนไว้ในระบบเรียบร้อยแล้ว' });
   }
+
+  const userDepartment = department || 'งานแผนและงบประมาณ';
 
   const newUser = {
     id: `usr-${Date.now()}`,
     name,
     email,
     role: requestedRole || 'executive',
-    status: 'Pending', // Pending admin approval
+    status: 'Pending',
+    access_scope: 'department_only',
+    allowed_departments: [userDepartment],
     title: title || 'สมาชิก มหาจุฬาลงกรณราชวิทยาลัย',
-    department: department || 'มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย (@mcu.ac.th)',
+    department: userDepartment,
     created_at: new Date().toISOString()
   };
 
@@ -103,7 +125,7 @@ router.post('/register', async (req, res) => {
 
   return res.json({
     success: true,
-    message: 'ลงทะเบียนสมาชิกสำเร็จ! บัญชีของคุณเข้าสู่สถานะรอการอนุมัติสิทธิ์โดย Admin',
+    message: 'ลงทะเบียนสมาชิกสำเร็จ! บัญชีของคุณเข้าสู่สถานะรอการอนุมัติสิทธิ์ส่วนงานโดย Admin',
     data: newUser
   });
 });
@@ -117,13 +139,42 @@ router.get('/users', async (req, res) => {
     }
   } catch (e) {}
 
-  return res.json({ success: true, data: mockData.users });
+  return res.json({ success: true, data: mockData.users, departments: DEPARTMENTS_LIST });
 });
 
-// 4. Admin Only: Update member status or role
+// 4. Admin Command: Control & Update Department Access Scope for Member
+router.put('/users/:id/department-scope', async (req, res) => {
+  const { id } = req.params;
+  const { access_scope, allowed_departments, department, role, status } = req.body;
+
+  const updates = {};
+  if (access_scope) updates.access_scope = access_scope;
+  if (allowed_departments) updates.allowed_departments = allowed_departments;
+  if (department) updates.department = department;
+  if (role) updates.role = role;
+  if (status) updates.status = status;
+
+  try {
+    await supabase.from('users').update(updates).eq('id', id);
+  } catch (e) {}
+
+  const index = mockData.users.findIndex(u => u.id === id);
+  if (index !== -1) {
+    mockData.users[index] = { ...mockData.users[index], ...updates };
+    return res.json({
+      success: true,
+      message: `ออกคำสั่งอนุมัติขอบเขตสิทธิ์ส่วนงานสำเร็จ (เข้าถึงได้ ${updates.allowed_departments?.length || 0} ส่วนงาน)`,
+      data: mockData.users[index]
+    });
+  }
+
+  return res.status(404).json({ success: false, message: 'ไม่พบบัญชีผู้ใช้' });
+});
+
+// 5. Admin General Update
 router.put('/users/:id', async (req, res) => {
   const { id } = req.params;
-  const updates = req.body; // { role, status, title, department }
+  const updates = req.body;
 
   try {
     await supabase.from('users').update(updates).eq('id', id);
@@ -138,7 +189,7 @@ router.put('/users/:id', async (req, res) => {
   return res.status(404).json({ success: false, message: 'ไม่พบบัญชีผู้ใช้' });
 });
 
-// 5. Admin Only: Delete member
+// 6. Admin Delete User
 router.delete('/users/:id', async (req, res) => {
   const { id } = req.params;
   try {

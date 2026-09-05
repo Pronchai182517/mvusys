@@ -8,6 +8,8 @@ export interface User {
   department: string;
   email: string;
   status?: 'Active' | 'Pending' | 'Disabled';
+  access_scope?: 'all' | 'department_only';
+  allowed_departments?: string[];
   created_at?: string;
 }
 
