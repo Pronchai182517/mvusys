@@ -46,7 +46,13 @@ export const App: React.FC = () => {
       <>
         <LoginPage
           onLoginSuccess={handleLoginSuccess}
+          onOpenGoogleLogin={() => setIsGoogleModalOpen(true)}
           onOpenRegister={() => setIsRegisterModalOpen(true)}
+        />
+        <GoogleLoginModal
+          isOpen={isGoogleModalOpen}
+          onClose={() => setIsGoogleModalOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
         />
         <RegisterModal
           isOpen={isRegisterModalOpen}
