@@ -8,6 +8,7 @@ import { ResolutionsPage } from './pages/ResolutionsPage';
 import { KnowledgePage } from './pages/KnowledgePage';
 import { AIAgentPage } from './pages/AIAgentPage';
 import { UserManagementPage } from './pages/UserManagementPage';
+import { LoginPage } from './pages/LoginPage';
 import { GoogleLoginModal } from './components/GoogleLoginModal';
 import { RegisterModal } from './components/RegisterModal';
 import { User, UserRole } from './types';
@@ -20,6 +21,7 @@ const USERS: Record<UserRole, User> = {
 };
 
 export const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [currentRole, setCurrentRole] = useState<UserRole>('admin');
   const [customUser, setCustomUser] = useState<User | null>(null);
@@ -27,6 +29,32 @@ export const App: React.FC = () => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
   const currentUser = customUser || USERS[currentRole];
+
+  const handleLoginSuccess = (loggedInUser: User) => {
+    setCustomUser(loggedInUser);
+    setIsAuthenticated(true);
+  };
+
+  const handleSignOut = () => {
+    setIsAuthenticated(false);
+    setCustomUser(null);
+  };
+
+  // Enforce Login Screen as Landing Page ONLY
+  if (!isAuthenticated) {
+    return (
+      <>
+        <LoginPage
+          onLoginSuccess={handleLoginSuccess}
+          onOpenRegister={() => setIsRegisterModalOpen(true)}
+        />
+        <RegisterModal
+          isOpen={isRegisterModalOpen}
+          onClose={() => setIsRegisterModalOpen(false)}
+        />
+      </>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
@@ -39,6 +67,7 @@ export const App: React.FC = () => {
         }}
         onOpenGoogleLogin={() => setIsGoogleModalOpen(true)}
         onOpenRegister={() => setIsRegisterModalOpen(true)}
+        onSignOut={handleSignOut}
       />
 
       {/* Google Login Modal */}
@@ -77,3 +106,4 @@ export const App: React.FC = () => {
 };
 
 export default App;
+

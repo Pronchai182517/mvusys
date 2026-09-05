@@ -1,12 +1,13 @@
 import React from 'react';
 import { UserRole, User } from '../types';
-import { Shield, Sparkles, Database, Bell, UserCheck, UserPlus } from 'lucide-react';
+import { Shield, Sparkles, Database, Bell, UserCheck, UserPlus, LogOut } from 'lucide-react';
 
 interface HeaderProps {
   currentUser: User;
   onRoleChange: (role: UserRole) => void;
   onOpenGoogleLogin: () => void;
   onOpenRegister: () => void;
+  onSignOut: () => void;
 }
 
 const USERS_LIST: User[] = [
@@ -16,7 +17,7 @@ const USERS_LIST: User[] = [
   { id: 'usr-4', name: 'เจ้าหน้าที่ติดตามประเมินผล', role: 'tracking_officer', title: 'เจ้าหน้าที่ประกันคุณภาพ', department: 'งานประกันคุณภาพ', email: 'qa@mvu.ac.th' }
 ];
 
-export const Header: React.FC<HeaderProps> = ({ currentUser, onRoleChange, onOpenGoogleLogin, onOpenRegister }) => {
+export const Header: React.FC<HeaderProps> = ({ currentUser, onRoleChange, onOpenGoogleLogin, onOpenRegister, onSignOut }) => {
   return (
     <header className="glass-panel sticky top-0 z-30 px-6 py-3 border-b border-slate-800/80 flex items-center justify-between shadow-xl">
       {/* Title & Branding */}
@@ -82,9 +83,13 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, onRoleChange, onOpe
             <div className="text-[10px] text-slate-400">{currentUser.department}</div>
           </div>
 
-          <button className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 relative transition-colors">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-mvu-400 animate-pulse"></span>
+          {/* Sign Out Button */}
+          <button
+            onClick={onSignOut}
+            title="ออกจากระบบ (Sign Out)"
+            className="p-2 rounded-xl text-rose-400 hover:bg-rose-500/20 transition-colors border border-rose-500/30"
+          >
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </div>
