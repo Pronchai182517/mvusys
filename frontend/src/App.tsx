@@ -7,7 +7,9 @@ import { ProjectsPage } from './pages/ProjectsPage';
 import { ResolutionsPage } from './pages/ResolutionsPage';
 import { KnowledgePage } from './pages/KnowledgePage';
 import { AIAgentPage } from './pages/AIAgentPage';
+import { UserManagementPage } from './pages/UserManagementPage';
 import { GoogleLoginModal } from './components/GoogleLoginModal';
+import { RegisterModal } from './components/RegisterModal';
 import { User, UserRole } from './types';
 
 const USERS: Record<UserRole, User> = {
@@ -22,6 +24,7 @@ export const App: React.FC = () => {
   const [currentRole, setCurrentRole] = useState<UserRole>('admin');
   const [customUser, setCustomUser] = useState<User | null>(null);
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
   const currentUser = customUser || USERS[currentRole];
 
@@ -35,6 +38,7 @@ export const App: React.FC = () => {
           setCurrentRole(newRole);
         }}
         onOpenGoogleLogin={() => setIsGoogleModalOpen(true)}
+        onOpenRegister={() => setIsRegisterModalOpen(true)}
       />
 
       {/* Google Login Modal */}
@@ -46,10 +50,16 @@ export const App: React.FC = () => {
         }}
       />
 
+      {/* Member Register Modal */}
+      <RegisterModal
+        isOpen={isRegisterModalOpen}
+        onClose={() => setIsRegisterModalOpen(false)}
+      />
+
       {/* Main Layout Container */}
       <div className="flex-1 flex overflow-hidden">
         {/* Sidebar Navigation */}
-        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} currentUser={currentUser} />
 
         {/* Content View Area */}
         <main className="flex-1 p-6 overflow-y-auto max-w-7xl mx-auto w-full">
@@ -59,6 +69,7 @@ export const App: React.FC = () => {
           {activeTab === 'resolutions' && <ResolutionsPage />}
           {activeTab === 'knowledge' && <KnowledgePage />}
           {activeTab === 'ai-agent' && <AIAgentPage />}
+          {activeTab === 'users' && <UserManagementPage currentUser={currentUser} />}
         </main>
       </div>
     </div>

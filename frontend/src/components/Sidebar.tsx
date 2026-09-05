@@ -1,22 +1,27 @@
 import React from 'react';
-import { LayoutDashboard, CheckSquare, FolderGit2, FileText, BookOpen, Bot, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, CheckSquare, FolderGit2, FileText, BookOpen, Bot, ChevronRight, Users } from 'lucide-react';
+import { User } from '../types';
 
-export type TabType = 'dashboard' | 'tasks' | 'projects' | 'resolutions' | 'knowledge' | 'ai-agent';
+export type TabType = 'dashboard' | 'tasks' | 'projects' | 'resolutions' | 'knowledge' | 'ai-agent' | 'users';
 
 interface SidebarProps {
   activeTab: TabType;
   onTabChange: (tab: TabType) => void;
+  currentUser: User;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
-  const menuItems: { id: TabType; label: string; icon: React.ReactNode; badge?: string }[] = [
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, currentUser }) => {
+  const menuItems: { id: TabType; label: string; icon: React.ReactNode; badge?: string; adminOnly?: boolean }[] = [
     { id: 'dashboard', label: 'แดชบอร์ดผู้บริหาร', icon: <LayoutDashboard className="w-5 h-5" /> },
     { id: 'tasks', label: 'ภารกิจและงานที่ได้รับมอบหมาย', icon: <CheckSquare className="w-5 h-5" /> },
     { id: 'projects', label: 'บริหารแผนงานและโครงการ', icon: <FolderGit2 className="w-5 h-5" /> },
     { id: 'resolutions', label: 'บันทึกและติดตามมติที่ประชุม', icon: <FileText className="w-5 h-5" /> },
     { id: 'knowledge', label: 'คลังเอกสารและฐานความรู้', icon: <BookOpen className="w-5 h-5" /> },
     { id: 'ai-agent', label: 'Local AI Agent', icon: <Bot className="w-5 h-5" />, badge: 'RAG AI' },
+    { id: 'users', label: 'บริหารจัดการสมาชิก', icon: <Users className="w-5 h-5" />, badge: 'Admin', adminOnly: true },
   ];
+
+  const visibleMenuItems = menuItems.filter(item => !item.adminOnly || currentUser.role === 'admin');
 
   return (
     <aside className="w-64 glass-panel border-r border-slate-800/80 min-h-[calc(100vh-65px)] p-4 flex flex-col justify-between">
@@ -25,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
           เมนูหลักระบบบริหาร
         </div>
 
-        {menuItems.map((item) => {
+        {visibleMenuItems.map((item) => {
           const isActive = activeTab === item.id;
           return (
             <button

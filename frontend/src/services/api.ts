@@ -1,4 +1,4 @@
-import { Task, Project, Resolution, KnowledgeItem } from '../types';
+import { Task, Project, Resolution, KnowledgeItem, User } from '../types';
 
 const API_BASE = '/api';
 
@@ -103,12 +103,39 @@ export const api = {
     return data.data;
   },
 
-  // Auth
+  // Auth & User Management
   async loginWithGoogle(email: string, name?: string) {
     const res = await fetch(`${API_BASE}/auth/google-login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, name })
+    });
+    return await res.json();
+  },
+  async registerMember(userData: { name: string; email: string; title: string; department: string; requestedRole: string }) {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    return await res.json();
+  },
+  async getUsers(): Promise<User[]> {
+    const res = await fetch(`${API_BASE}/auth/users`);
+    const data = await res.json();
+    return data.data || [];
+  },
+  async updateUser(id: string, updates: Partial<User>) {
+    const res = await fetch(`${API_BASE}/auth/users/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates)
+    });
+    return await res.json();
+  },
+  async deleteUser(id: string) {
+    const res = await fetch(`${API_BASE}/auth/users/${id}`, {
+      method: 'DELETE'
     });
     return await res.json();
   }

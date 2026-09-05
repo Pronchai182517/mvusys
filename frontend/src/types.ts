@@ -7,6 +7,8 @@ export interface User {
   title: string;
   department: string;
   email: string;
+  status?: 'Active' | 'Pending' | 'Disabled';
+  created_at?: string;
 }
 
 export interface Task {

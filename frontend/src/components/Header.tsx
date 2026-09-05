@@ -1,11 +1,12 @@
 import React from 'react';
 import { UserRole, User } from '../types';
-import { Shield, Sparkles, Database, Bell, UserCheck } from 'lucide-react';
+import { Shield, Sparkles, Database, Bell, UserCheck, UserPlus } from 'lucide-react';
 
 interface HeaderProps {
   currentUser: User;
   onRoleChange: (role: UserRole) => void;
   onOpenGoogleLogin: () => void;
+  onOpenRegister: () => void;
 }
 
 const USERS_LIST: User[] = [
@@ -15,7 +16,7 @@ const USERS_LIST: User[] = [
   { id: 'usr-4', name: 'เจ้าหน้าที่ติดตามประเมินผล', role: 'tracking_officer', title: 'เจ้าหน้าที่ประกันคุณภาพ', department: 'งานประกันคุณภาพ', email: 'qa@mvu.ac.th' }
 ];
 
-export const Header: React.FC<HeaderProps> = ({ currentUser, onRoleChange, onOpenGoogleLogin }) => {
+export const Header: React.FC<HeaderProps> = ({ currentUser, onRoleChange, onOpenGoogleLogin, onOpenRegister }) => {
   return (
     <header className="glass-panel sticky top-0 z-30 px-6 py-3 border-b border-slate-800/80 flex items-center justify-between shadow-xl">
       {/* Title & Branding */}
@@ -36,6 +37,15 @@ export const Header: React.FC<HeaderProps> = ({ currentUser, onRoleChange, onOpe
 
       {/* Controls & Role Switcher */}
       <div className="flex items-center space-x-3">
+        {/* Register Button */}
+        <button
+          onClick={onOpenRegister}
+          className="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-medium flex items-center gap-1 transition-all"
+        >
+          <UserPlus className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="hidden sm:inline">ลงทะเบียนสมาชิก</span>
+        </button>
+
         {/* Google @mcu.ac.th Login Button */}
         <button
           onClick={onOpenGoogleLogin}
