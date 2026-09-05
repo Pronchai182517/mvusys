@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { api } from '../services/api';
 import { UserRole } from '../types';
 import { UserPlus, Mail, ShieldAlert, CheckCircle, Building2, User } from 'lucide-react';
+import { JOB_TITLES, DEPARTMENTS } from '../constants/masterData';
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -146,25 +147,31 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-slate-400">ตำแหน่งงาน</label>
-              <input
-                type="text"
+              <label className="text-xs text-slate-400 font-medium">ตำแหน่งงาน</label>
+              <select
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                className="w-full mt-1 bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-emerald-500"
-              />
+                className="w-full mt-1 bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-emerald-500 cursor-pointer"
+              >
+                {JOB_TITLES.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
             </div>
 
             <div>
-              <label className="text-xs text-slate-400">สังกัด / คณะ / ส่วนงาน</label>
-              <input
-                type="text"
+              <label className="text-xs text-slate-400 font-medium">สังกัด / คณะ / ส่วนงาน</label>
+              <select
                 value={department}
                 onChange={e => setDepartment(e.target.value)}
-                className="w-full mt-1 bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-emerald-500"
-              />
+                className="w-full mt-1 bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-emerald-500 cursor-pointer"
+              >
+                {DEPARTMENTS.map(d => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
             </div>
           </div>
 

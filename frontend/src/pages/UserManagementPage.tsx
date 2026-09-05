@@ -2,17 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { User, UserRole } from '../types';
 import { Users, Shield, CheckCircle, Trash2, Search, Building2, Sliders, AlertTriangle, Lock } from 'lucide-react';
-
-const DEPARTMENTS = [
-  'ส่วนงานบริหารองค์กร',
-  'สำนักงานผู้บริหาร',
-  'งานแผนและงบประมาณ',
-  'งานประกันคุณภาพและติดตามผล',
-  'งานสารบรรณและประชุม',
-  'ศูนย์เทคโนโลยีสารสนเทศ',
-  'งานการเงินและพัสดุ',
-  'มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย (ส่วนกลาง)'
-];
+import { DEPARTMENTS, JOB_TITLES } from '../constants/masterData';
 
 interface UserManagementPageProps {
   currentUser: User;
