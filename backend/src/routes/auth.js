@@ -73,7 +73,7 @@ router.post('/google-login', async (req, res) => {
   let access_scope = 'all';
   let allowed_departments = DEPARTMENTS_LIST;
 
-  if (email.includes('admin') || email.includes('worachayo')) {
+  if (email.includes('admin') || email.includes('admin_user')) {
     role = 'admin';
   } else if (email.includes('plan')) {
     role = 'project_lead';

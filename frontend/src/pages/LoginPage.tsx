@@ -11,7 +11,7 @@ interface LoginPageProps {
 }
 
 const PRESET_USERS: User[] = [
-  { id: 'usr-1', name: 'พระพรชัย วรชโย', role: 'admin', title: 'นักวิชาการคอมพิวเตอร์', department: 'ส่วนงานบริหารองค์กร', email: 'worachayo@mvu.ac.th' },
+  { id: 'usr-1', name: 'ผู้ดูแลระบบสูงสุด', role: 'admin', title: 'นักวิชาการคอมพิวเตอร์', department: 'ส่วนงานบริหารองค์กร', email: 'admin@yourdomain.ac.th' },
   { id: 'usr-2', name: 'ผู้บริหาร มหาวชิราลงกรณฯ', role: 'executive', title: 'รองอธิการบดี / ผู้บริหาร', department: 'สำนักงานผู้บริหาร', email: 'exec@mvu.ac.th' },
   { id: 'usr-3', name: 'เจ้าหน้าที่แผนงานและงบประมาณ', role: 'project_lead', title: 'นักวิเคราะห์นโยบายและแผน', department: 'งานแผนและงบประมาณ', email: 'plan@mvu.ac.th' },
   { id: 'usr-4', name: 'เจ้าหน้าที่ติดตามประเมินผล', role: 'tracking_officer', title: 'เจ้าหน้าที่ประกันคุณภาพ', department: 'งานประกันคุณภาพ', email: 'qa@mvu.ac.th' }
@@ -106,7 +106,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onOpenGoog
             </span>
           </div>
           <div className="flex gap-2">
-            <input type="email" placeholder="กรอกอีเมล เช่น worachayo@mcu.ac.th" value={email} onChange={e => setEmail(e.target.value)} className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-mvu-500 font-mono" />
+            <input type="email" placeholder="กรอกอีเมล เช่น admin@yourdomain.ac.th" value={email} onChange={e => setEmail(e.target.value)} className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-mvu-500 font-mono" />
             <button type="submit" disabled={loading || !email} className="px-4 py-2 rounded-xl bg-mvu-500 hover:bg-mvu-400 disabled:opacity-50 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md shadow-mvu-500/20 transition-all hover:scale-105">
               <span>เข้าสู่ระบบ</span><LogIn className="w-4 h-4" />
             </button>

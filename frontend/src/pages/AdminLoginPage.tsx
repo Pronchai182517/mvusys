@@ -19,17 +19,17 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onLoginSuccess, 
 
     // Hardcoded dummy admin login for demonstration
     setTimeout(() => {
-      if (password === 'admin1234') {
+      if (password === 'your_secure_password') {
         onLoginSuccess({
           id: 'usr-1',
-          name: 'พระพรชัย วรชโย (Admin)',
+          name: 'ผู้ดูแลระบบสูงสุด (Admin)',
           role: 'admin',
-          title: 'ผู้ดูแลระบบสูงสุด',
-          department: 'ส่วนงานบริหารองค์กร',
+          title: 'ผู้ดูแลระบบ',
+          department: 'ส่วนงานเทคโนโลยีสารสนเทศ',
           email: 'admin@mvu.ac.th'
         });
       } else {
-        setErrorMsg('รหัสผ่านผู้ดูแลระบบไม่ถูกต้อง (ลองใช้: admin1234)');
+        setErrorMsg('รหัสผ่านผู้ดูแลระบบไม่ถูกต้อง (ลองใช้: your_secure_password)');
         setLoading(false);
       }
     }, 800);

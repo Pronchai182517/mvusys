@@ -85,7 +85,7 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
                 name="email"
                 autoComplete="username"
                 required
-                placeholder="เช่น worachayo@mcu.ac.th หรือ user@gmail.com"
+                placeholder="เช่น admin@yourdomain.ac.th หรือ user@gmail.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="w-full bg-slate-900 border border-slate-700/80 rounded-xl pl-9 pr-3 py-2 text-xs text-white outline-none focus:border-mvu-500 font-mono"
@@ -112,7 +112,7 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
             <button
               type="button"
               onClick={() => {
-                const targetEmail = email || 'worachayo@mcu.ac.th';
+                const targetEmail = email || 'admin@yourdomain.ac.th';
                 setEmail(targetEmail);
                 performLogin(targetEmail, password);
               }}
