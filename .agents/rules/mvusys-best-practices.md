@@ -8,6 +8,11 @@ This file contains critical project-specific rules, security guardrails, and dev
   - Internal IP addresses (e.g., `192.168.x.x`).
   - Absolute server paths containing local usernames (e.g., `/home/iamvj/...`).
   - Specific internal domains unless explicitly instructed otherwise. Use placeholders like `yourdomain.com`.
+- **Data Privacy & Source Code Scrubbing:** NEVER hardcode real personal identifiers (e.g., real names, real student/staff emails like `@mvu.ac.th`) or testing passwords (e.g., `admin1234`) directly into the source code (`.tsx`, `.js`, etc.).
+- **Use Generic Placeholders:** When creating mock data or preset users for UI testing, ALWAYS use generic placeholders such as:
+  - Names: `ผู้ดูแลระบบ (Admin)`, `John Doe`
+  - Emails: `admin@yourdomain.ac.th`, `user@example.com`
+  - Passwords: `your_secure_password` or rely on `process.env` variables.
 
 ## 2. Docker Workflow (Project Specific)
 - **Frontend Container Rebuilds:** In this project, the `mvusys-frontend` container in `docker-compose.yml` is built as a static Nginx image without volume mounting. Therefore, whenever frontend React code is modified, you **must** manually rebuild the container using `docker compose up -d --build frontend` for the changes to take effect.
