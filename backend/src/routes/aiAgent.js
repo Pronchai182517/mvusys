@@ -1,28 +1,30 @@
 import express from 'express';
-import { supabase, mockData } from '../db/supabaseClient.js';
+import { supabase } from '../db/supabaseClient.js';
 
 const router = express.Router();
 
 // Helper to query all context
 async function getAllContext() {
-  let tasks = mockData.tasks;
-  let projects = mockData.projects;
-  let resolutions = mockData.resolutions;
-  let knowledge = mockData.knowledge_base;
+  let tasks = [];
+  let projects = [];
+  let resolutions = [];
+  let knowledge = [];
 
   try {
-    const { data: t } = await supabase.from('tasks').select('*');
-    if (t && t.length) tasks = t;
+    const [tasksRes, projectsRes, resRes, kbRes] = await Promise.all([
+      supabase.from('tasks').select('*'),
+      supabase.from('projects').select('*'),
+      supabase.from('resolutions').select('*'),
+      supabase.from('knowledge_base').select('*')
+    ]);
 
-    const { data: p } = await supabase.from('projects').select('*');
-    if (p && p.length) projects = p;
-
-    const { data: r } = await supabase.from('resolutions').select('*');
-    if (r && r.length) resolutions = r;
-
-    const { data: k } = await supabase.from('knowledge_base').select('*');
-    if (k && k.length) knowledge = k;
-  } catch (e) {}
+    tasks = tasksRes.data || [];
+    projects = projectsRes.data || [];
+    resolutions = resRes.data || [];
+    knowledge = kbRes.data || [];
+  } catch (e) {
+    console.error('Failed to fetch context for AI Agent:', e.message);
+  }
 
   return { tasks, projects, resolutions, knowledge };
 }
@@ -66,7 +68,7 @@ router.post('/query', async (req, res) => {
 ### 1. สรุปภาพรวมความก้าวหน้าโครงการ
 - **โครงการทั้งหมด:** ${context.projects.length} โครงการ (ดำเนินการตามแผน ${context.projects.filter(p => p.status === 'On Track').length} โครงการ, มีความเสี่ยง ${context.projects.filter(p => p.status === 'At Risk').length} โครงการ)
 - **งบประมาณรวม:** ${context.projects.reduce((acc, curr) => acc + (Number(curr.budget)||0), 0).toLocaleString()} บาท
-- **ความก้าวหน้าเฉลี่ย:** ${Math.round(context.projects.reduce((acc, curr) => acc + (Number(curr.progress)||0), 0) / context.projects.length)}%
+- **ความก้าวหน้าเฉลี่ย:** ${context.projects.length > 0 ? Math.round(context.projects.reduce((acc, curr) => acc + (Number(curr.progress)||0), 0) / context.projects.length) : 0}%
 
 ### 2. มติที่ประชุมสำคัญและสถานะการติดตาม
 ${context.resolutions.map((r, i) => `- **${r.title}** (${r.meeting_no}) -> ผู้รับผิดชอบ: ${r.assignee} [สถานะ: ${r.status}]`).join('\n')}
@@ -99,7 +101,7 @@ ${context.tasks.filter(t => t.priority === 'Urgent' || t.status === 'Delayed').m
       if (matchedKb.length > 0) {
         responseText += `📚 **เอกสาร/ระเบียบในฐานความรู้ (${matchedKb.length} รายการ):**\n`;
         matchedKb.forEach(k => {
-          responseText += `- **${k.title}** [หมวดหมู่: ${k.category}] — ${k.content.substring(0, 150)}...\n`;
+          responseText += `- **${k.title}** [หมวดหมู่: ${k.category}] — ${(k.content || '').substring(0, 150)}...\n`;
           citations.push({ title: k.title, source: `${k.category} - ${k.source}` });
         });
         responseText += `\n`;

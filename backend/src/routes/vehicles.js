@@ -1,146 +1,187 @@
 import express from 'express';
-import { supabase, mockData } from '../db/supabaseClient.js';
+import { supabase } from '../db/supabaseClient.js';
 
 const router = express.Router();
 
 // Get all vehicles
-router.get('/', (req, res) => {
-  return res.json({ success: true, data: mockData.vehicles });
+router.get('/', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('vehicles').select('*').order('id', { ascending: true });
+    if (error) throw error;
+    return res.json({ success: true, data });
+  } catch (err) {
+    console.error('Fetch vehicles error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // Get all bookings
-router.get('/bookings', (req, res) => {
-  // Return descending order
-  const sorted = [...mockData.vehicle_bookings].sort((a, b) => b.id - a.id);
-  return res.json({ success: true, data: sorted });
+router.get('/bookings', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('vehicle_bookings').select('*').order('id', { ascending: false });
+    if (error) throw error;
+    return res.json({ success: true, data });
+  } catch (err) {
+    console.error('Fetch bookings error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // Book a vehicle
-router.post('/book', (req, res) => {
+router.post('/book', async (req, res) => {
   const { booking_date, start_time, end_time, booker, vehicle_type, driver, purpose, destination, passengers, admin_officer } = req.body;
   
   if (!booking_date || !start_time || !end_time || !vehicle_type) {
     return res.status(400).json({ success: false, message: 'Missing required fields' });
   }
 
-  // Count available vehicles of this type
-  const totalVehiclesOfType = mockData.vehicles.filter(v => v.type === vehicle_type && v.status === 'Available');
-  if (totalVehiclesOfType.length === 0) {
-    return res.status(400).json({ success: false, message: 'ไม่มีรถประเภทนี้ที่พร้อมใช้งาน หรือ รถอยู่ในระหว่างการซ่อมบำรุง' });
-  }
+  try {
+    // 1. Get available vehicles of requested type
+    const { data: availableVehicles, error: vError } = await supabase
+      .from('vehicles')
+      .select('*')
+      .eq('type', vehicle_type)
+      .eq('status', 'Available');
+      
+    if (vError) throw vError;
 
-  // Find overlapping bookings for this vehicle type on this date
-  const overlappingBookings = mockData.vehicle_bookings.filter(b => {
-    if (b.status === 'Cancelled') return false;
-    if (b.vehicle_type !== vehicle_type) return false;
-    if (b.booking_date !== booking_date) return false;
+    if (!availableVehicles || availableVehicles.length === 0) {
+      return res.status(400).json({ success: false, message: 'ไม่มีรถประเภทนี้ที่พร้อมใช้งาน หรือ รถอยู่ในระหว่างการซ่อมบำรุง' });
+    }
+
+    // 2. Find overlapping bookings on that date
+    const { data: overlappingBookings, error: bError } = await supabase
+      .from('vehicle_bookings')
+      .select('vehicle_id')
+      .eq('vehicle_type', vehicle_type)
+      .eq('booking_date', booking_date)
+      .neq('status', 'Cancelled')
+      .lt('start_time', end_time)
+      .gt('end_time', start_time);
+
+    if (bError) throw bError;
+
+    if (overlappingBookings && overlappingBookings.length >= availableVehicles.length) {
+      return res.json({ 
+        success: false, 
+        message: `ไม่สามารถจองได้ เนื่องจาก ${vehicle_type} ถูกจองเต็มแล้วในช่วงเวลาดังกล่าว (${start_time} - ${end_time})` 
+      });
+    }
+
+    // 3. Find an available vehicle ID
+    const bookedIds = overlappingBookings?.map(b => b.vehicle_id) || [];
+    const availableVehicle = availableVehicles.find(v => !bookedIds.includes(v.id));
+
+    // 4. Create booking
+    const newBooking = {
+      booking_date,
+      start_time,
+      end_time,
+      booker: booker || 'ผู้จอง',
+      vehicle_type,
+      vehicle_id: availableVehicle ? availableVehicle.id : null,
+      driver: driver || 'คนขับส่วนกลาง',
+      purpose: purpose || 'ไปงาน',
+      destination: destination || 'สถานที่',
+      passengers: passengers || '1',
+      status: 'Pending',
+      admin_officer: admin_officer || '',
+      mileage_start: 0,
+      mileage_end: 0,
+      total_distance: 0
+    };
+
+    const { data, error: insertError } = await supabase.from('vehicle_bookings').insert([newBooking]).select();
     
-    // Check time overlap
-    // interval A overlaps interval B if (StartA < EndB) and (EndA > StartB)
-    return (start_time < b.end_time) && (end_time > b.start_time);
-  });
+    if (insertError) throw insertError;
 
-  if (overlappingBookings.length >= totalVehiclesOfType.length) {
+    const notificationsSent = ['Line', 'Telegram', 'WhatsApp', 'Gmail'];
+    
     return res.json({ 
-      success: false, 
-      message: `ไม่สามารถจองได้ เนื่องจาก ${vehicle_type} ถูกจองเต็มแล้วในช่วงเวลาดังกล่าว (${start_time} - ${end_time})` 
+      success: true, 
+      data: data[0], 
+      notifications: notificationsSent,
+      message: 'จองสำเร็จ และส่งการแจ้งเตือนเรียบร้อยแล้ว'
     });
+
+  } catch (err) {
+    console.error('Booking error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
-
-  // Find an available vehicle ID
-  const bookedVehicleIds = overlappingBookings.map(b => b.vehicle_id);
-  const availableVehicle = totalVehiclesOfType.find(v => !bookedVehicleIds.includes(v.id));
-
-  const newBooking = {
-    id: Date.now(),
-    booking_date,
-    start_time,
-    end_time,
-    booker: booker || 'ผู้จอง',
-    vehicle_type,
-    vehicle_id: availableVehicle ? availableVehicle.id : null,
-    driver: driver || 'คนขับส่วนกลาง',
-    purpose: purpose || 'ไปงาน',
-    destination: destination || 'สถานที่',
-    passengers: passengers || '1',
-    status: 'Pending',
-    admin_officer: admin_officer || '',
-    mileage_start: 0,
-    mileage_end: 0,
-    total_distance: 0,
-    created_at: new Date().toISOString()
-  };
-
-  mockData.vehicle_bookings.push(newBooking);
-  
-  // Mock sending notifications
-  const notificationsSent = ['Line', 'Telegram', 'WhatsApp', 'Gmail'];
-
-  return res.json({ 
-    success: true, 
-    data: newBooking, 
-    notifications: notificationsSent,
-    message: 'จองสำเร็จ และส่งการแจ้งเตือนเรียบร้อยแล้ว'
-  });
 });
 
 // Update status (Confirm / Cancel)
-router.put('/book/:id/status', (req, res) => {
+router.put('/book/:id/status', async (req, res) => {
   const id = parseInt(req.params.id);
   const { status, admin_officer } = req.body;
   
-  const bookingIndex = mockData.vehicle_bookings.findIndex(b => b.id === id);
-  if (bookingIndex === -1) {
-    return res.status(404).json({ success: false, message: 'Booking not found' });
-  }
-  
-  mockData.vehicle_bookings[bookingIndex].status = status;
-  if (admin_officer) {
-    mockData.vehicle_bookings[bookingIndex].admin_officer = admin_officer;
-  }
-  
-  // Mock sending notifications
-  const notificationsSent = ['Line', 'Telegram', 'WhatsApp', 'Gmail'];
+  try {
+    const updates = { status };
+    if (admin_officer) updates.admin_officer = admin_officer;
 
-  return res.json({ 
-    success: true, 
-    data: mockData.vehicle_bookings[bookingIndex],
-    notifications: notificationsSent
-  });
+    const { data, error } = await supabase.from('vehicle_bookings').update(updates).eq('id', id).select();
+    
+    if (error) throw error;
+    if (!data || data.length === 0) return res.status(404).json({ success: false, message: 'Booking not found' });
+    
+    const notificationsSent = ['Line', 'Telegram', 'WhatsApp', 'Gmail'];
+    
+    return res.json({ 
+      success: true, 
+      data: data[0],
+      notifications: notificationsSent
+    });
+  } catch (err) {
+    console.error('Update booking status error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // Complete travel and record mileage
-router.put('/book/:id/complete', (req, res) => {
+router.put('/book/:id/complete', async (req, res) => {
   const id = parseInt(req.params.id);
   const { mileage_start, mileage_end } = req.body;
   
-  const bookingIndex = mockData.vehicle_bookings.findIndex(b => b.id === id);
-  if (bookingIndex === -1) {
-    return res.status(404).json({ success: false, message: 'Booking not found' });
+  try {
+    const start = parseInt(mileage_start) || 0;
+    const end = parseInt(mileage_end) || 0;
+    const distance = Math.max(0, end - start);
+    
+    const updates = {
+      status: 'Completed',
+      mileage_start: start,
+      mileage_end: end,
+      total_distance: distance
+    };
+
+    const { data, error } = await supabase.from('vehicle_bookings').update(updates).eq('id', id).select();
+    
+    if (error) throw error;
+    if (!data || data.length === 0) return res.status(404).json({ success: false, message: 'Booking not found' });
+    
+    return res.json({ success: true, data: data[0] });
+  } catch (err) {
+    console.error('Complete booking error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
-  
-  const distance = Math.max(0, parseInt(mileage_end) - parseInt(mileage_start));
-  
-  mockData.vehicle_bookings[bookingIndex].status = 'Completed';
-  mockData.vehicle_bookings[bookingIndex].mileage_start = parseInt(mileage_start);
-  mockData.vehicle_bookings[bookingIndex].mileage_end = parseInt(mileage_end);
-  mockData.vehicle_bookings[bookingIndex].total_distance = distance;
-  
-  return res.json({ success: true, data: mockData.vehicle_bookings[bookingIndex] });
 });
 
 // Update vehicle maintenance status
-router.put('/:id/status', (req, res) => {
+router.put('/:id/status', async (req, res) => {
   const id = parseInt(req.params.id);
   const { status } = req.body;
   
-  const vehicleIndex = mockData.vehicles.findIndex(v => v.id === id);
-  if (vehicleIndex === -1) {
-    return res.status(404).json({ success: false, message: 'Vehicle not found' });
+  try {
+    const { data, error } = await supabase.from('vehicles').update({ status }).eq('id', id).select();
+    
+    if (error) throw error;
+    if (!data || data.length === 0) return res.status(404).json({ success: false, message: 'Vehicle not found' });
+    
+    return res.json({ success: true, data: data[0] });
+  } catch (err) {
+    console.error('Update vehicle status error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
-  
-  mockData.vehicles[vehicleIndex].status = status;
-  return res.json({ success: true, data: mockData.vehicles[vehicleIndex] });
 });
 
 export default router;

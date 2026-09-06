@@ -1,5 +1,4 @@
 import React from 'react';
-import { LayoutDashboard, CheckSquare, FolderGit2, FileText, BookOpen, Bot, ChevronRight, Users, Car, Table, X } from 'lucide-react';
 import { User } from '../types';
 
 export type TabType = 'dashboard' | 'tasks' | 'projects' | 'resolutions' | 'knowledge' | 'ai-agent' | 'users' | 'vehicles' | 'vehicle_admin';
@@ -10,19 +9,19 @@ interface SidebarProps {
   currentUser: User;
   isMobileMenuOpen?: boolean;
   onCloseMobileMenu?: () => void;
+  onSignOut: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, currentUser, isMobileMenuOpen = false, onCloseMobileMenu }) => {
-  const menuItems: { id: TabType; label: string; icon: React.ReactNode; badge?: string; adminOnly?: boolean; vehicleAdminOnly?: boolean }[] = [
-    { id: 'dashboard', label: 'แดชบอร์ดผู้บริหาร', icon: <LayoutDashboard className="w-5 h-5" /> },
-    { id: 'tasks', label: 'ภารกิจและงานที่ได้รับมอบหมาย', icon: <CheckSquare className="w-5 h-5" /> },
-    { id: 'projects', label: 'บริหารแผนงานและโครงการ', icon: <FolderGit2 className="w-5 h-5" /> },
-    { id: 'resolutions', label: 'บันทึกและติดตามมติที่ประชุม', icon: <FileText className="w-5 h-5" /> },
-    { id: 'knowledge', label: 'คลังเอกสารและฐานความรู้', icon: <BookOpen className="w-5 h-5" /> },
-    { id: 'vehicles', label: 'ระบบจองยานพาหนะ', icon: <Car className="w-5 h-5" /> },
-    { id: 'vehicle_admin', label: 'ตารางสรุปคิวรถ', icon: <Table className="w-5 h-5" />, badge: 'Admin', vehicleAdminOnly: true },
-    { id: 'ai-agent', label: 'Local AI Agent', icon: <Bot className="w-5 h-5" />, badge: 'RAG AI' },
-    { id: 'users', label: 'บริหารจัดการสมาชิก', icon: <Users className="w-5 h-5" />, badge: 'Admin', adminOnly: true },
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, currentUser, isMobileMenuOpen = false, onCloseMobileMenu, onSignOut }) => {
+  const menuItems: { id: TabType; label: string; icon: string; adminOnly?: boolean; vehicleAdminOnly?: boolean }[] = [
+    { id: 'dashboard', label: 'ภาพรวมระบบบริหาร', icon: 'dashboard' },
+    { id: 'tasks', label: 'ภารกิจ & โครงการราชวิทยาลัย', icon: 'task_alt' },
+    { id: 'vehicles', label: 'ยานพาหนะและการเดินทาง', icon: 'directions_car' },
+    { id: 'ai-agent', label: 'มติสภา & ระบบปัญญาประดิษฐ์', icon: 'psychology' },
+    { id: 'users', label: 'ระบบบริหารจัดการผู้ใช้ (RBAC)', icon: 'admin_panel_settings', adminOnly: true },
+    { id: 'resolutions', label: 'คลังมติที่ประชุมสภาสถาบัน', icon: 'gavel' },
+    { id: 'knowledge', label: 'คลังสารสนเทศพระปริยัติธรรม', icon: 'auto_stories' },
+    { id: 'vehicle_admin', label: 'ตารางสรุปคิวรถ', icon: 'table', vehicleAdminOnly: true },
   ];
 
   const visibleMenuItems = menuItems.filter(item => {
@@ -33,71 +32,88 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, curren
 
   return (
     <>
-      {/* Mobile Backdrop */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 md:hidden"
-          onClick={onCloseMobileMenu}
-        />
-      )}
-
-      {/* Sidebar Content */}
+      <div 
+        className={`fixed inset-0 z-50 bg-primary-container/40 backdrop-blur-xs transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={onCloseMobileMenu}
+      />
       <aside 
-        className={`fixed md:static inset-y-0 left-0 z-50 w-64 glass-panel border-r border-slate-800/80 min-h-screen md:min-h-[calc(100vh-65px)] p-4 flex flex-col justify-between transition-transform duration-300 ease-in-out transform ${
-          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-        }`}
+        className={`fixed top-0 bottom-0 left-0 z-50 w-[84vw] max-w-[320px] bg-surface-card shadow-[0_4px_24px_rgba(11,27,52,0.12)] transition-transform duration-300 flex flex-col justify-between pt-safe pb-safe ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="space-y-1 overflow-y-auto">
-          <div className="flex items-center justify-between px-3 py-2">
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-              เมนูหลักระบบบริหาร
-            </span>
+        <div className="flex flex-col flex-1 overflow-y-auto px-screen-margin-mobile pt-space-lg">
+          <div className="flex items-center justify-between pb-space-md">
+            <div className="flex items-center gap-space-sm">
+              <div className="w-8 h-8 rounded bg-gradient-to-br from-primary to-accent-gold-subtle flex items-center justify-center text-on-primary font-bold shadow-sm shrink-0">
+                <span className="material-symbols-outlined text-[18px]">account_balance</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-label-md text-label-md font-bold text-text-primary tracking-tight">mvusys</span>
+                <span className="font-mono-badge text-mono-badge text-status-success uppercase font-semibold">SECURED // INST</span>
+              </div>
+            </div>
             <button 
+              aria-label="ปิดเมนู" 
+              className="w-11 h-11 -mr-2 flex items-center justify-center text-text-secondary active:bg-surface-subtle"
               onClick={onCloseMobileMenu}
-              className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
             >
-              <X className="w-4 h-4" />
+              <span className="material-symbols-outlined text-[20px]">close</span>
             </button>
           </div>
 
-          {visibleMenuItems.map((item) => {
-            const isActive = activeTab === item.id;
-            return (
+          <div className="bg-surface-subtle p-space-sm my-space-xs rounded-none">
+            <span className="font-label-sm text-[10px] text-text-muted uppercase tracking-wider block font-semibold">สถาบันสังกัด</span>
+            <p className="font-body-sm text-body-sm font-semibold text-text-primary leading-tight mt-0.5">มหาวชิราลงกรณบาลีเถรวาทราชวิทยาลัย</p>
+            <div className="flex items-center gap-space-xs mt-space-xs">
+              <span className="font-mono-badge text-mono-badge px-1.5 py-0.5 bg-primary-container text-on-primary font-bold">ROLE: {currentUser.role.toUpperCase()}</span>
+              <span className="font-mono-badge text-mono-badge px-1.5 py-0.5 bg-accent-gold-subtle text-on-secondary-container font-semibold">TIER-1 RBAC</span>
+            </div>
+          </div>
+
+          <div className="mt-space-md mb-space-sm">
+            <div className="relative flex items-center bg-surface w-full h-11 px-3">
+              <span className="material-symbols-outlined text-text-muted text-[18px] mr-2">search</span>
+              <input className="w-full bg-transparent font-body-sm text-body-sm text-text-primary placeholder:text-text-muted focus:outline-none" placeholder="ค้นหาข้อมูล, รหัสภารกิจ, เอกสาร..." type="text" />
+            </div>
+          </div>
+
+          <div className="pt-space-xs flex flex-col gap-1">
+            <span className="font-mono-badge text-[10px] text-text-muted uppercase tracking-wider px-2 py-1">เมนูการจัดการระบบ (ADMIN & CORE)</span>
+            {visibleMenuItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => {
                   onTabChange(item.id);
                   if (onCloseMobileMenu) onCloseMobileMenu();
                 }}
-                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
-                  isActive
-                    ? 'bg-gradient-to-r from-mvu-600/30 to-amber-600/20 text-mvu-300 border border-mvu-500/40 shadow-lg shadow-mvu-500/10'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 border border-transparent'
+                className={`flex items-center gap-3 h-11 px-3 w-full text-left font-body-sm text-body-sm font-medium ${
+                  activeTab === item.id ? 'text-primary bg-surface-subtle' : 'text-text-primary active:bg-surface-subtle'
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  <span className={`${isActive ? 'text-mvu-400' : 'text-slate-400 group-hover:text-slate-200'}`}>
-                    {item.icon}
-                  </span>
-                  <span>{item.label}</span>
-                </div>
-
-                {item.badge ? (
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-mvu-500/20 text-mvu-300 border border-mvu-500/30">
-                    {item.badge}
-                  </span>
-                ) : (
-                  <ChevronRight className={`w-4 h-4 transition-transform ${isActive ? 'opacity-100 translate-x-0 text-mvu-400' : 'opacity-0 -translate-x-2 group-hover:opacity-60'}`} />
-                )}
+                <span className={`material-symbols-outlined text-[20px] ${activeTab === item.id ? 'text-primary' : 'text-text-secondary'}`}>
+                  {item.icon}
+                </span>
+                {item.label}
               </button>
-            );
-          })}
+            ))}
+          </div>
         </div>
 
-        {/* Institutional Info Footnote */}
-        <div className="mt-4 p-3.5 rounded-2xl glass-card border border-amber-500/20 bg-gradient-to-b from-amber-500/5 to-transparent text-center space-y-1 shrink-0">
-          <div className="text-xs font-semibold text-amber-300">มหาวชิราลงกรณบาลีเถรวาทฯ</div>
-          <div className="text-[11px] text-slate-400">Local AI Agent Vibe Coding MVP</div>
+        <div className="p-screen-margin-mobile bg-surface-subtle flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-primary-container font-bold text-xs uppercase">
+              {currentUser.email.substring(0,2)}
+            </div>
+            <div className="flex flex-col">
+              <span className="font-label-sm text-label-sm font-semibold text-text-primary leading-tight">{currentUser.name}</span>
+              <span className="font-mono-badge text-[10px] text-text-muted uppercase">{currentUser.email}</span>
+            </div>
+          </div>
+          <button 
+            aria-label="ออกจากระบบ" 
+            className="w-11 h-11 flex items-center justify-center text-error active:bg-error-container/20"
+            onClick={onSignOut}
+          >
+            <span className="material-symbols-outlined text-[20px]">logout</span>
+          </button>
         </div>
       </aside>
     </>

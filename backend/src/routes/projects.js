@@ -1,26 +1,24 @@
 import express from 'express';
-import { supabase, mockData } from '../db/supabaseClient.js';
+import { supabase } from '../db/supabaseClient.js';
 
 const router = express.Router();
 
 // GET all projects
 router.get('/', async (req, res) => {
   try {
-    let data, error; // const { data, error } = await supabase.from('projects').select('*').order('id', { ascending: true });
-    if (!error && data && data.length > 0) {
-      return res.json({ success: true, source: 'supabase', data });
-    }
+    const { data, error } = await supabase.from('projects').select('*').order('id', { ascending: true });
+    if (error) throw error;
+    return res.json({ success: true, source: 'supabase', data });
   } catch (err) {
     console.error('Supabase projects fetch error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
-  return res.json({ success: true, source: 'local_store', data: mockData.projects });
 });
 
 // POST create project
 router.post('/', async (req, res) => {
   const { name, objective, budget, progress, status, owner, kpis, obstacles, start_date, end_date } = req.body;
   const newProject = {
-    id: Date.now(),
     name: name || 'โครงการใหม่',
     objective: objective || '',
     budget: Number(budget) || 0,
@@ -30,20 +28,17 @@ router.post('/', async (req, res) => {
     kpis: kpis || '',
     obstacles: obstacles || '',
     start_date: start_date || new Date().toISOString().split('T')[0],
-    end_date: end_date || '',
-    created_at: new Date().toISOString()
+    end_date: end_date || null
   };
 
   try {
-    let data, error; // const { data, error } = await supabase.from('projects').insert([newProject]).select();
-    if (!error && data) {
-      mockData.projects.push(data[0]);
-      return res.json({ success: true, data: data[0] });
-    }
-  } catch (err) {}
-
-  mockData.projects.push(newProject);
-  return res.json({ success: true, data: newProject });
+    const { data, error } = await supabase.from('projects').insert([newProject]).select();
+    if (error) throw error;
+    return res.json({ success: true, data: data[0] });
+  } catch (err) {
+    console.error('Supabase project create error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // PUT update project
@@ -52,29 +47,27 @@ router.put('/:id', async (req, res) => {
   const updates = req.body;
 
   try {
-    let data, error; // const { data, error } = await supabase.from('projects').update(updates).eq('id', id).select();
-    if (!error && data) {
-      return res.json({ success: true, data: data[0] });
-    }
-  } catch (err) {}
-
-  const index = mockData.projects.findIndex(p => p.id === id);
-  if (index !== -1) {
-    mockData.projects[index] = { ...mockData.projects[index], ...updates };
-    return res.json({ success: true, data: mockData.projects[index] });
+    const { data, error } = await supabase.from('projects').update(updates).eq('id', id).select();
+    if (error) throw error;
+    if (!data || data.length === 0) return res.status(404).json({ success: false, message: 'Project not found' });
+    return res.json({ success: true, data: data[0] });
+  } catch (err) {
+    console.error('Supabase project update error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
-
-  return res.status(404).json({ success: false, message: 'Project not found' });
 });
 
 // DELETE project
 router.delete('/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   try {
-    await supabase.from('projects').delete().eq('id', id);
-  } catch (err) {}
-  mockData.projects = mockData.projects.filter(p => p.id !== id);
-  return res.json({ success: true, id });
+    const { error } = await supabase.from('projects').delete().eq('id', id);
+    if (error) throw error;
+    return res.json({ success: true, id });
+  } catch (err) {
+    console.error('Supabase project delete error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 export default router;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Header } from './components/Header';
 import { Sidebar, TabType } from './components/Sidebar';
+import { BottomNav } from './components/BottomNav';
 import { DashboardPage } from './pages/DashboardPage';
 import { TasksPage } from './pages/TasksPage';
 import { ProjectsPage } from './pages/ProjectsPage';
@@ -74,7 +75,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100">
+    <div className="bg-surface text-on-surface flex flex-col min-h-screen relative antialiased selection:bg-primary selection:text-on-primary">
       {/* Top Header */}
       <Header
         currentUser={currentUser}
@@ -103,32 +104,30 @@ export const App: React.FC = () => {
         onClose={() => setIsRegisterModalOpen(false)}
       />
 
-      {/* Main Layout Container */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {/* Sidebar Navigation */}
-        <Sidebar 
-          activeTab={activeTab} 
-          onTabChange={setActiveTab} 
-          currentUser={currentUser}
-          isMobileMenuOpen={isMobileMenuOpen}
-          onCloseMobileMenu={() => setIsMobileMenuOpen(false)}
-        />
+      {/* Sidebar Navigation Drawer */}
+      <Sidebar 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab} 
+        currentUser={currentUser}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onCloseMobileMenu={() => setIsMobileMenuOpen(false)}
+        onSignOut={handleSignOut}
+      />
 
-        {/* Content View Area */}
-        <main className="flex-1 p-4 sm:p-6 overflow-y-auto w-full">
-          <div className="max-w-7xl mx-auto w-full">
-            {activeTab === 'dashboard' && <DashboardPage onNavigate={setActiveTab} />}
-            {activeTab === 'tasks' && <TasksPage />}
-            {activeTab === 'projects' && <ProjectsPage />}
-            {activeTab === 'resolutions' && <ResolutionsPage />}
-            {activeTab === 'knowledge' && <KnowledgePage />}
-            {activeTab === 'ai-agent' && <AIAgentPage />}
-            {activeTab === 'users' && <UserManagementPage currentUser={currentUser} />}
-            {activeTab === 'vehicles' && <VehicleBookingPage />}
-            {activeTab === 'vehicle_admin' && <VehicleAdminPage />}
-          </div>
-        </main>
-      </div>
+      {/* Content View Area */}
+      <main className="flex-1 flex flex-col relative w-full pt-16 pb-20 bg-surface min-h-[calc(100vh-80px)]">
+        {activeTab === 'dashboard' && <DashboardPage onNavigate={setActiveTab} />}
+        {activeTab === 'tasks' && <TasksPage />}
+        {activeTab === 'projects' && <ProjectsPage />}
+        {activeTab === 'resolutions' && <ResolutionsPage />}
+        {activeTab === 'knowledge' && <KnowledgePage />}
+        {activeTab === 'ai-agent' && <AIAgentPage />}
+        {activeTab === 'users' && <UserManagementPage currentUser={currentUser} />}
+        {activeTab === 'vehicles' && <VehicleBookingPage />}
+        {activeTab === 'vehicle_admin' && <VehicleAdminPage />}
+      </main>
+
+      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
 };

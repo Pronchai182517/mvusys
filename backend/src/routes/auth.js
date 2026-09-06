@@ -1,5 +1,5 @@
 import express from 'express';
-import { supabase, mockData } from '../db/supabaseClient.js';
+import { supabase } from '../db/supabaseClient.js';
 
 const router = express.Router();
 
@@ -24,20 +24,6 @@ export const DEPARTMENTS_LIST = [
   'สำนักส่งเสริมพระพุทธศาสนาและบริการสังคม'
 ];
 
-export const JOB_TITLES_LIST = [
-  'นักวิชาการคอมพิวเตอร์',
-  'นักวิเคราะห์นโยบายและแผน',
-  'เจ้าหน้าที่ประกันคุณภาพ',
-  'เจ้าหน้าที่สารบรรณและธุรการ',
-  'เจ้าหน้าที่การเงินและพัสดุ',
-  'นักวิชาการศึกษา / เจ้าหน้าที่วิชาการ',
-  'อาจารย์ประจำ / บุคลากรสายวิชาการ',
-  'หัวหน้างาน / ผู้อำนวยการส่วนงาน',
-  'รองอธิการบดี / ผู้บริหารระดับสูง',
-  'อธิการบดี / ประธานคณะกรรมการ',
-  'บุคลากรทั่วไป'
-];
-
 // 1. Google OAuth / Quick Login
 router.post('/google-login', async (req, res) => {
   const { email, name, picture, googleId } = req.body;
@@ -56,56 +42,67 @@ router.post('/google-login', async (req, res) => {
     });
   }
 
-  const existingUser = mockData.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+  try {
+    const { data: existingUsers, error: fetchError } = await supabase
+      .from('users')
+      .select('*')
+      .ilike('email', email);
 
-  if (existingUser) {
-    if (existingUser.status === 'Unverified') {
-      return res.status(403).json({ success: false, message: 'กรุณายืนยันอีเมลของคุณก่อนเข้าสู่ระบบ (Check your email inbox)' });
+    if (fetchError) throw fetchError;
+
+    if (existingUsers && existingUsers.length > 0) {
+      const existingUser = existingUsers[0];
+      if (existingUser.status === 'Unverified') {
+        return res.status(403).json({ success: false, message: 'กรุณายืนยันอีเมลของคุณก่อนเข้าสู่ระบบ (Check your email inbox)' });
+      }
+      return res.json({
+        success: true,
+        message: 'ลงชื่อเข้าใช้สำเร็จ',
+        data: { user: existingUser }
+      });
     }
+
+    // Create new user if not exist
+    let role = 'executive';
+    let access_scope = 'all';
+    let allowed_departments = DEPARTMENTS_LIST;
+
+    if (email.includes('admin') || email.includes('admin_user')) {
+      role = 'admin';
+    } else if (email.includes('plan')) {
+      role = 'project_lead';
+      access_scope = 'department_only';
+      allowed_departments = ['งานแผนและงบประมาณ'];
+    }
+
+    const newProfile = {
+      id: googleId || `usr-${Date.now()}`,
+      name: name || email.split('@')[0],
+      email,
+      role,
+      status: 'Active',
+      access_scope,
+      allowed_departments,
+      title: domain === 'mcu.ac.th' ? 'บุคลากร มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย' : 'บุคลากร มหาวชิราลงกรณบาลีเถรวาทฯ',
+      department: domain === 'mcu.ac.th' ? 'มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย (ส่วนกลาง)' : 'ส่วนงานบริหารองค์กร'
+    };
+
+    const { data: upsertData, error: upsertError } = await supabase.from('users').upsert([newProfile]).select();
+    
+    if (upsertError) throw upsertError;
+
     return res.json({
       success: true,
-      message: 'ลงชื่อเข้าใช้สำเร็จ',
-      data: { user: existingUser }
+      message: 'ลงชื่อเข้าใช้ด้วยบัญชี @mcu.ac.th สำเร็จ',
+      data: { user: upsertData[0] }
     });
+  } catch (err) {
+    console.error('Google login error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
-
-  let role = 'executive';
-  let access_scope = 'all';
-  let allowed_departments = DEPARTMENTS_LIST;
-
-  if (email.includes('admin') || email.includes('admin_user')) {
-    role = 'admin';
-  } else if (email.includes('plan')) {
-    role = 'project_lead';
-    access_scope = 'department_only';
-    allowed_departments = ['งานแผนและงบประมาณ'];
-  }
-
-  const newProfile = {
-    id: googleId || `usr-${Date.now()}`,
-    name: name || email.split('@')[0],
-    email,
-    role,
-    status: 'Active',
-    access_scope,
-    allowed_departments,
-    title: domain === 'mcu.ac.th' ? 'บุคลากร มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย' : 'บุคลากร มหาวชิราลงกรณบาลีเถรวาทฯ',
-    department: domain === 'mcu.ac.th' ? 'มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย (ส่วนกลาง)' : 'ส่วนงานบริหารองค์กร'
-  };
-
-  mockData.users.push(newProfile);
-  try {
-    await supabase.from('users').upsert([newProfile]);
-  } catch (err) {}
-
-  return res.json({
-    success: true,
-    message: 'ลงชื่อเข้าใช้ด้วยบัญชี @mcu.ac.th สำเร็จ',
-    data: { user: newProfile }
-  });
 });
 
-// 2. Register New Member with Department Selection
+// 2. Register New Member
 router.post('/register', async (req, res) => {
   const { name, email, title, department, requestedRole } = req.body;
 
@@ -123,70 +120,80 @@ router.post('/register', async (req, res) => {
     });
   }
 
-  const duplicate = mockData.users.find(u => u.email.toLowerCase() === email.toLowerCase());
-  if (duplicate) {
-    return res.status(400).json({ success: false, message: 'อีเมลนี้ถูกลงทะเบียนไว้ในระบบเรียบร้อยแล้ว' });
-  }
-
-  const userDepartment = department || 'งานแผนและงบประมาณ';
-
-  const newUser = {
-    id: `usr-${Date.now()}`,
-    name,
-    email,
-    role: requestedRole || 'executive',
-    status: 'Unverified',
-    access_scope: 'department_only',
-    allowed_departments: [userDepartment],
-    title: title || 'สมาชิก มหาจุฬาลงกรณราชวิทยาลัย',
-    department: userDepartment,
-    created_at: new Date().toISOString()
-  };
-
-  mockData.users.push(newUser);
   try {
-    await supabase.from('users').insert([newUser]);
-  } catch (err) {}
+    const { data: existingUsers } = await supabase.from('users').select('*').ilike('email', email);
+    
+    if (existingUsers && existingUsers.length > 0) {
+      return res.status(400).json({ success: false, message: 'อีเมลนี้ถูกลงทะเบียนไว้ในระบบเรียบร้อยแล้ว' });
+    }
 
-  return res.json({
-    success: true,
-    message: 'ลงทะเบียนสมาชิกสำเร็จ! กรุณาตรวจสอบกล่องจดหมายอีเมลของคุณเพื่อยืนยันการสมัคร',
-    data: newUser,
-    verificationToken: `mock-token-${Date.now()}`
-  });
+    const userDepartment = department || 'งานแผนและงบประมาณ';
+
+    const newUser = {
+      id: `usr-${Date.now()}`,
+      name,
+      email,
+      role: requestedRole || 'executive',
+      status: 'Unverified',
+      access_scope: 'department_only',
+      allowed_departments: [userDepartment],
+      title: title || 'สมาชิก มหาจุฬาลงกรณราชวิทยาลัย',
+      department: userDepartment
+    };
+
+    const { data: insertData, error: insertError } = await supabase.from('users').insert([newUser]).select();
+    
+    if (insertError) throw insertError;
+
+    return res.json({
+      success: true,
+      message: 'ลงทะเบียนสมาชิกสำเร็จ! กรุณาตรวจสอบกล่องจดหมายอีเมลของคุณเพื่อยืนยันการสมัคร',
+      data: insertData[0],
+      verificationToken: `mock-token-${Date.now()}`
+    });
+  } catch (err) {
+    console.error('Register error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // 2.5 Verify Email
 router.post('/verify-email', async (req, res) => {
   const { email } = req.body;
-  const user = mockData.users.find(u => u.email.toLowerCase() === email.toLowerCase());
   
-  if (!user) {
-    return res.status(404).json({ success: false, message: 'ไม่พบบัญชีผู้ใช้นี้' });
-  }
-  
-  if (user.status !== 'Unverified') {
-    return res.status(400).json({ success: false, message: 'อีเมลนี้ถูกยืนยันไปแล้ว' });
-  }
-
-  user.status = 'Active';
   try {
-    await supabase.from('users').update({ status: 'Active' }).eq('id', user.id);
-  } catch (err) {}
+    const { data: users, error: fetchError } = await supabase.from('users').select('*').ilike('email', email);
+    if (fetchError) throw fetchError;
+    
+    if (!users || users.length === 0) {
+      return res.status(404).json({ success: false, message: 'ไม่พบบัญชีผู้ใช้นี้' });
+    }
+    
+    const user = users[0];
+    if (user.status !== 'Unverified') {
+      return res.status(400).json({ success: false, message: 'อีเมลนี้ถูกยืนยันไปแล้ว' });
+    }
 
-  return res.json({ success: true, message: 'ยืนยันอีเมลสำเร็จ คุณสามารถเข้าสู่ระบบได้แล้ว' });
+    const { error: updateError } = await supabase.from('users').update({ status: 'Active' }).eq('id', user.id);
+    if (updateError) throw updateError;
+
+    return res.json({ success: true, message: 'ยืนยันอีเมลสำเร็จ คุณสามารถเข้าสู่ระบบได้แล้ว' });
+  } catch (err) {
+    console.error('Verify email error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // 3. Admin Only: Get all members list
 router.get('/users', async (req, res) => {
   try {
-    const { data, error } = await supabase.from('users').select('*');
-    if (false) {
-      return res.json({ success: true, data });
-    }
-  } catch (e) {}
-
-  return res.json({ success: true, data: mockData.users, departments: DEPARTMENTS_LIST });
+    const { data, error } = await supabase.from('users').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    return res.json({ success: true, data, departments: DEPARTMENTS_LIST });
+  } catch (err) {
+    console.error('Fetch users error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // 4. Admin Command: Control & Update Department Access Scope for Member
@@ -202,20 +209,19 @@ router.put('/users/:id/department-scope', async (req, res) => {
   if (status) updates.status = status;
 
   try {
-    await supabase.from('users').update(updates).eq('id', id);
-  } catch (e) {}
+    const { data, error } = await supabase.from('users').update(updates).eq('id', id).select();
+    if (error) throw error;
+    if (!data || data.length === 0) return res.status(404).json({ success: false, message: 'ไม่พบบัญชีผู้ใช้' });
 
-  const index = mockData.users.findIndex(u => u.id === id);
-  if (index !== -1) {
-    mockData.users[index] = { ...mockData.users[index], ...updates };
     return res.json({
       success: true,
-      message: `ออกคำสั่งอนุมัติขอบเขตสิทธิ์ส่วนงานสำเร็จ (เข้าถึงได้ ${updates.allowed_departments?.length || 0} ส่วนงาน)`,
-      data: mockData.users[index]
+      message: `ออกคำสั่งอนุมัติขอบเขตสิทธิ์ส่วนงานสำเร็จ (เข้าถึงได้ ${data[0].allowed_departments?.length || 0} ส่วนงาน)`,
+      data: data[0]
     });
+  } catch (err) {
+    console.error('Update user scope error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
-
-  return res.status(404).json({ success: false, message: 'ไม่พบบัญชีผู้ใช้' });
 });
 
 // 5. Admin General Update
@@ -224,27 +230,28 @@ router.put('/users/:id', async (req, res) => {
   const updates = req.body;
 
   try {
-    await supabase.from('users').update(updates).eq('id', id);
-  } catch (e) {}
+    const { data, error } = await supabase.from('users').update(updates).eq('id', id).select();
+    if (error) throw error;
+    if (!data || data.length === 0) return res.status(404).json({ success: false, message: 'ไม่พบบัญชีผู้ใช้' });
 
-  const index = mockData.users.findIndex(u => u.id === id);
-  if (index !== -1) {
-    mockData.users[index] = { ...mockData.users[index], ...updates };
-    return res.json({ success: true, message: 'อัปเดตข้อมูลและสิทธิ์สมาชิกสำเร็จ', data: mockData.users[index] });
+    return res.json({ success: true, message: 'อัปเดตข้อมูลและสิทธิ์สมาชิกสำเร็จ', data: data[0] });
+  } catch (err) {
+    console.error('Update user error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
   }
-
-  return res.status(404).json({ success: false, message: 'ไม่พบบัญชีผู้ใช้' });
 });
 
 // 6. Admin Delete User
 router.delete('/users/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    await supabase.from('users').delete().eq('id', id);
-  } catch (e) {}
-
-  mockData.users = mockData.users.filter(u => u.id !== id);
-  return res.json({ success: true, message: 'ลบบัญชีสมาชิกเรียบร้อยแล้ว', id });
+    const { error } = await supabase.from('users').delete().eq('id', id);
+    if (error) throw error;
+    return res.json({ success: true, message: 'ลบบัญชีสมาชิกเรียบร้อยแล้ว', id });
+  } catch (err) {
+    console.error('Delete user error:', err.message);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 export default router;

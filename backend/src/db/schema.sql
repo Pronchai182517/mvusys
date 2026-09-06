@@ -7,7 +7,11 @@ CREATE TABLE IF NOT EXISTS users (
   role VARCHAR(50) NOT NULL, -- 'admin', 'executive', 'project_lead', 'tracking_officer'
   title VARCHAR(255),
   department VARCHAR(255),
-  email VARCHAR(255)
+  email VARCHAR(255),
+  status VARCHAR(50) DEFAULT 'Active',
+  access_scope VARCHAR(50) DEFAULT 'department_only',
+  allowed_departments TEXT[],
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 2. Tasks / Assignments Table (ภารกิจและงาน)
@@ -61,5 +65,36 @@ CREATE TABLE IF NOT EXISTS knowledge_base (
   source VARCHAR(255),
   content TEXT NOT NULL,
   tags TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 6. Vehicles Table
+CREATE TABLE IF NOT EXISTS vehicles (
+  id SERIAL PRIMARY KEY,
+  type VARCHAR(50) NOT NULL, -- 'Van', 'Pickup', '6-Wheel'
+  license_plate VARCHAR(50) NOT NULL,
+  status VARCHAR(50) DEFAULT 'Available', -- 'Available', 'In Use', 'Maintenance'
+  brand VARCHAR(100),
+  seat_capacity INTEGER
+);
+
+-- 7. Vehicle Bookings Table (ระบบจองยานพาหนะ)
+CREATE TABLE IF NOT EXISTS vehicle_bookings (
+  id SERIAL PRIMARY KEY,
+  booking_date DATE NOT NULL,
+  start_time TIME NOT NULL,
+  end_time TIME NOT NULL,
+  vehicle_type VARCHAR(50) NOT NULL, -- 'Van', 'Pickup', '6-Wheel'
+  booker VARCHAR(255) NOT NULL,
+  driver VARCHAR(255),
+  purpose TEXT NOT NULL,
+  destination VARCHAR(255) NOT NULL,
+  passengers VARCHAR(255) NOT NULL,
+  status VARCHAR(50) DEFAULT 'Pending', -- 'Pending', 'Confirmed', 'Completed', 'Cancelled'
+  admin_officer VARCHAR(255),
+  vehicle_id INTEGER,
+  mileage_start INTEGER DEFAULT 0,
+  mileage_end INTEGER DEFAULT 0,
+  total_distance INTEGER DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

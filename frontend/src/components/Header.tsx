@@ -1,6 +1,5 @@
 import React from 'react';
 import { UserRole, User } from '../types';
-import { Shield, Sparkles, Database, UserCheck, UserPlus, LogOut, Menu } from 'lucide-react';
 
 interface HeaderProps {
   currentUser: User;
@@ -20,88 +19,73 @@ const USERS_LIST: User[] = [
 
 export const Header: React.FC<HeaderProps> = ({ currentUser, onRoleChange, onOpenGoogleLogin, onOpenRegister, onSignOut, onToggleMobileMenu }) => {
   return (
-    <header className="glass-panel sticky top-0 z-30 px-4 sm:px-6 py-3 border-b border-slate-800/80 flex items-center justify-between shadow-xl">
-      {/* Title & Branding */}
-      <div className="flex items-center space-x-2 sm:space-x-3">
-        {onToggleMobileMenu && (
-          <button 
-            onClick={onToggleMobileMenu}
-            className="md:hidden p-2 -ml-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-        )}
-        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-mvu-500 to-amber-600 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-mvu-500/20 shrink-0">
-          <Sparkles className="w-4 h-4 sm:w-6 sm:h-6" />
+    <header className="fixed top-0 inset-x-0 z-40 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(11,27,52,0.04)] pt-safe">
+      <div className="h-16 px-screen-margin-mobile flex items-center justify-between gap-space-md">
+        <div className="flex items-center gap-space-sm">
+          {onToggleMobileMenu && (
+            <button 
+              onClick={onToggleMobileMenu} 
+              aria-label="เปิดเมนูระบบ" 
+              className="w-11 h-11 -ml-1.5 flex items-center justify-center text-text-primary active:bg-surface-subtle transition-colors"
+            >
+              <span className="material-symbols-outlined text-[22px]">menu</span>
+            </button>
+          )}
+          <div className="flex items-center gap-space-xs">
+            <div className="w-8 h-8 rounded bg-gradient-to-br from-primary to-accent-gold-subtle flex items-center justify-center text-on-primary font-bold shadow-sm shrink-0 hidden sm:flex">
+              <span className="material-symbols-outlined text-[18px]">account_balance</span>
+            </div>
+            <div className="flex flex-col pl-space-2xs">
+              <span className="font-label-sm text-label-sm tracking-tight text-text-primary uppercase font-bold">mvusys</span>
+              <span className="font-mono-badge text-[9px] text-text-muted leading-tight tracking-wider">SYS.PROD-V4</span>
+            </div>
+          </div>
         </div>
-        <div className="hidden sm:block">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-base sm:text-lg font-semibold tracking-wide text-white">mvusys Local AI Agent</h1>
-            <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 font-mono">
-              <Database className="w-3 h-3" /> <span className="hidden lg:inline">Supabase Live</span>
+
+        <div className="flex items-center gap-space-sm">
+          <div className="hidden lg:flex items-center space-x-2 mr-2">
+            <button
+              onClick={onOpenRegister}
+              className="px-3 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-secondary font-label-sm text-label-sm font-semibold transition-all"
+            >
+              ลงทะเบียน
+            </button>
+            <button
+              onClick={onOpenGoogleLogin}
+              className="px-3 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-secondary font-label-sm text-label-sm font-semibold transition-all flex items-center gap-1"
+            >
+              <span className="material-symbols-outlined text-[16px]">login</span>
+              Google Login
+            </button>
+          </div>
+
+          <div className="hidden sm:flex flex-col items-end">
+            <div className="flex items-center">
+              <span className="font-label-sm text-[10px] font-semibold text-text-secondary mr-2 uppercase tracking-wider">Simulate Role:</span>
+              <select
+                value={currentUser.role}
+                onChange={(e) => onRoleChange(e.target.value as UserRole)}
+                className="bg-surface-subtle text-text-primary font-label-sm text-label-sm font-semibold rounded px-2 py-1 outline-none border border-border-hairline focus:border-primary transition-colors cursor-pointer"
+              >
+                {USERS_LIST.map((u) => (
+                  <option key={u.id} value={u.role}>
+                    {u.role.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <span className="font-mono-badge text-mono-badge text-status-success uppercase flex items-center gap-1 mt-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-status-success inline-block"></span>Online
             </span>
           </div>
-          <p className="text-[10px] sm:text-xs text-slate-400">ระบบบริหารงาน มหาวชิราลงกรณบาลีเถรวาทราชวิทยาลัย</p>
-        </div>
-      </div>
 
-      {/* Controls & Role Switcher */}
-      <div className="flex items-center space-x-2 sm:space-x-3">
-        {/* Register Button */}
-        <button
-          onClick={onOpenRegister}
-          className="px-2 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-medium flex items-center gap-1 transition-all"
-          title="ลงทะเบียนสมาชิก"
-        >
-          <UserPlus className="w-3.5 h-3.5 text-emerald-400" />
-          <span className="hidden sm:inline">ลงทะเบียน</span>
-        </button>
-
-        {/* Google @mcu.ac.th Login Button */}
-        <button
-          onClick={onOpenGoogleLogin}
-          className="px-2 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl bg-gradient-to-r from-red-600/30 to-amber-600/30 hover:from-red-600/50 hover:to-amber-600/50 text-red-200 border border-red-500/40 text-xs font-semibold flex items-center gap-1.5 shadow-md transition-all hover:scale-105"
-          title="Google @mcu.ac.th"
-        >
-          <span className="w-2 h-2 rounded-full bg-red-400 animate-ping"></span>
-          <span className="hidden sm:inline">Google @mcu.ac.th</span>
-          <span className="sm:hidden">Google</span>
-        </button>
-
-        {/* Role Selector Simulator */}
-        <div className="hidden md:flex items-center space-x-2 glass-card px-3 py-1.5 rounded-xl border border-slate-700/50">
-          <Shield className="w-4 h-4 text-mvu-400" />
-          <span className="text-xs text-slate-400">สิทธิ์:</span>
-          <select
-            value={currentUser.role}
-            onChange={(e) => onRoleChange(e.target.value as UserRole)}
-            className="bg-slate-900 text-xs text-mvu-300 font-medium rounded-lg px-2 py-1 outline-none border border-slate-700 cursor-pointer hover:border-mvu-500 transition-colors w-32 lg:w-auto"
+          <button 
+            className="w-11 h-11 flex items-center justify-center p-0.5 rounded-full active:opacity-80 transition-opacity"
+            onClick={onToggleMobileMenu} // Using mobile menu to see profile detail
           >
-            {USERS_LIST.map((u) => (
-              <option key={u.id} value={u.role}>
-                {u.name} ({u.title})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* User Badge */}
-        <div className="flex items-center space-x-2 sm:space-x-3 sm:border-l border-slate-800 sm:pl-3">
-          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-mvu-400 font-medium text-xs">
-            <UserCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-          <div className="hidden lg:block text-left">
-            <div className="text-xs font-medium text-slate-200">{currentUser.name}</div>
-            <div className="text-[10px] text-slate-400">{currentUser.department}</div>
-          </div>
-
-          {/* Sign Out Button */}
-          <button
-            onClick={onSignOut}
-            title="ออกจากระบบ (Sign Out)"
-            className="p-1.5 sm:p-2 rounded-xl text-rose-400 hover:bg-rose-500/20 transition-colors border border-rose-500/30"
-          >
-            <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-xs uppercase shadow-sm">
+              {currentUser.email.substring(0,2)}
+            </div>
           </button>
         </div>
       </div>

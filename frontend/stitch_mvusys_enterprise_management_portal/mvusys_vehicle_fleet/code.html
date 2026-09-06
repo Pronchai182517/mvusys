@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="th"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>mvusys</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "outline": "#75777e", "on-secondary": "#ffffff", "primary-fixed-dim": "#b8c7e8", "status-warning": "#B45309", "error": "#ba1a1a", "on-tertiary-container": "#029576", "surface-subtle": "#F1F5F9", "status-danger-bg": "#FEF2F2", "primary-fixed": "#d7e3ff", "tertiary-fixed": "#85f7d3", "surface-container-highest": "#d3e4fe", "outline-variant": "#c5c6ce", "surface-container": "#e5eeff", "status-warning-bg": "#FFFBEB", "on-tertiary-fixed-variant": "#00513f", "secondary-container": "#fdba45", "on-background": "#0b1c30", "accent-gold-subtle": "#FEF3C7", "on-secondary-container": "#6f4b00", "inverse-primary": "#b8c7e8", "inverse-on-surface": "#eaf1ff", "surface-container-high": "#dce9ff", "surface": "#f8f9ff", "on-error-container": "#93000a", "on-surface": "#0b1c30", "status-danger": "#B91C1C", "tertiary-container": "#002118", "surface-dim": "#cbdbf5", "on-error": "#ffffff", "secondary-fixed-dim": "#fdba45", "on-primary-fixed": "#0b1b34", "on-secondary-fixed": "#281900", "on-secondary-fixed-variant": "#604100", "border-strong": "#CBD5E1", "text-secondary": "#475569", "border-hairline": "#E2E8F0", "inverse-surface": "#213145", "secondary-fixed": "#ffdeae", "surface-container-lowest": "#ffffff", "surface-bright": "#f8f9ff", "surface-canvas": "#F8FAFC", "status-success-bg": "#ECFDF5", "status-success": "#15803D", "surface-container-low": "#eff4ff", "text-primary": "#0F172A", "on-primary-container": "#7584a2", "on-tertiary": "#ffffff", "text-muted": "#94A3B8", "tertiary-fixed-dim": "#68dab7", "error-container": "#ffdad6", "tertiary": "#000000", "surface-variant": "#d3e4fe", "on-tertiary-fixed": "#002118", "surface-card": "#FFFFFF", "on-surface-variant": "#44474d", "on-primary": "#ffffff", "primary-container": "#0b1b34", "on-primary-fixed-variant": "#394762", "surface-tint": "#505f7b", "secondary": "#7f5700", "primary": "#000000", "background": "#f8f9ff" }, borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, spacing: { "space-xs": "4px", "space-3xl": "32px", "space-xl": "20px", "space-2xs": "2px", "screen-margin-mobile": "16px", "space-sm": "8px", "space-2xl": "24px", "card-padding-mobile": "14px", "space-lg": "16px", "space-md": "12px", "table-row-height": "44px" }, fontFamily: { "body-md": ["Inter"], "headline-lg": ["Inter"], "headline-xl": ["Inter"], "headline-md": ["Inter"], "body-sm": ["Inter"], "mono-badge": ["monospace"], "label-sm": ["Inter"], "headline-sm": ["Inter"], "label-md": ["Inter"], "mono-data": ["monospace"], "body-lg": ["Inter"] }, fontSize: { "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }], "headline-lg": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-xl": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.025em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "mono-badge": ["10px", { "lineHeight": "12px", "letterSpacing": "0.04em", "fontWeight": "600" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.02em", "fontWeight": "500" }], "headline-sm": ["16px", { "lineHeight": "22px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }], "mono-data": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;display:inline-block;vertical-align:middle;}</style></head><body class="bg-surface text-on-surface flex flex-col min-h-screen relative antialiased selection:bg-primary selection:text-on-primary"><header class="fixed top-0 inset-x-0 z-40 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(11,27,52,0.04)] pt-safe"><div class="h-16 px-screen-margin-mobile flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-sm"><button aria-label="เปิดเมนูระบบ" class="w-11 h-11 -ml-1.5 flex items-center justify-center text-text-primary active:bg-surface-subtle transition-colors" id="btn-drawer-open" type="button"><span class="material-symbols-outlined text-[22px]">menu</span></button><div class="flex items-center gap-space-xs"><img alt="mvusys Institutional Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WfQ49WXNS1pNHK_MJBAVpVgsqkFJFw4WsOscIFdax8TKtcMXzKimuPTjDCS1TUdIFBlyqaBH7_G48yf_W8uWekGJQnzSX79gNpp5FmwClUR7FsgLtVHioAqE6gcXXJOtxhj1ofaD4y88j9bslhmS4H_kgDo-IW5tJYmHZPSYlRxpPBAXSc6XSMuq0e6VlpfiAExPOpYLRxzrjUcB1lOWILA_e15sigd9Wai6Jc25f7Ite4qgqZ1Po4xpIe"/><div class="flex flex-col pl-space-2xs"><span class="font-label-sm text-label-sm tracking-tight text-text-primary uppercase font-bold">mvusys</span><span class="font-mono-badge text-[9px] text-text-muted leading-tight tracking-wider">SYS.PROD-V4</span></div></div></div><div class="flex items-center gap-space-sm"><div class="hidden sm:flex flex-col items-end"><span class="font-label-sm text-label-sm font-semibold text-text-primary">Vehicle Fleet</span><span class="font-mono-badge text-mono-badge text-status-success uppercase flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-status-success inline-block"></span>Online</span></div><a aria-label="โปรไฟล์ผู้ใช้งาน" class="w-11 h-11 flex items-center justify-center p-0.5 rounded-full active:opacity-80 transition-opacity" data-path="system-settings" href="#"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAbbLfm2PYRJKBfdT0M-90yMAOdPZ_qNkiPpt92LIFhYsR8t50yPTtaZ-psGW54AfmovhhqNREh9Ft8nVQL2KsaHIq2kMjbY1nR5xHdEaeryBlDqHA0hi3__xOcI76zgk_6yAoJfsgOA3hDP6SPnn0SZTbgHj2UTUHlwn65pg8GAwMVL87zEVYw4oMX1V-wt6GVRS4kOQPwgS_CX1bYrQe0VOsT05VVP6qkTJ_JesjcvTTwz7_gc077w"/></a></div></div></header><div class="fixed inset-0 z-50 bg-primary-container/40 backdrop-blur-xs opacity-0 pointer-events-none transition-opacity duration-300" id="drawer-backdrop"></div><aside class="fixed top-0 bottom-0 left-0 z-50 w-[84vw] max-w-[320px] bg-surface-card shadow-[0_4px_24px_rgba(11,27,52,0.12)] -translate-x-full transition-transform duration-300 flex flex-col justify-between pt-safe pb-safe" id="drawer-menu"><div class="flex flex-col flex-1 overflow-y-auto px-screen-margin-mobile pt-space-lg"><div class="flex items-center justify-between pb-space-md"><div class="flex items-center gap-space-sm"><img alt="mvusys Institutional Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WfQ49WXNS1pNHK_MJBAVpVgsqkFJFw4WsOscIFdax8TKtcMXzKimuPTjDCS1TUdIFBlyqaBH7_G48yf_W8uWekGJQnzSX79gNpp5FmwClUR7FsgLtVHioAqE6gcXXJOtxhj1ofaD4y88j9bslhmS4H_kgDo-IW5tJYmHZPSYlRxpPBAXSc6XSMuq0e6VlpfiAExPOpYLRxzrjUcB1lOWILA_e15sigd9Wai6Jc25f7Ite4qgqZ1Po4xpIe"/><div class="flex flex-col"><span class="font-label-md text-label-md font-bold text-text-primary tracking-tight">mvusys</span><span class="font-mono-badge text-mono-badge text-status-success uppercase font-semibold">SECURED // INST</span></div></div><button aria-label="ปิดเมนู" class="w-11 h-11 -mr-2 flex items-center justify-center text-text-secondary active:bg-surface-subtle" id="btn-drawer-close" type="button"><span class="material-symbols-outlined text-[20px]">close</span></button></div><div class="bg-surface-subtle p-space-sm my-space-xs rounded-none"><span class="font-label-sm text-[10px] text-text-muted uppercase tracking-wider block font-semibold">สถาบันสังกัด</span><p class="font-body-sm text-body-sm font-semibold text-text-primary leading-tight mt-0.5">มหาวชิราลงกรณบาลีเถรวาทราชวิทยาลัย</p><div class="flex items-center gap-space-xs mt-space-xs"><span class="font-mono-badge text-mono-badge px-1.5 py-0.5 bg-primary-container text-on-primary font-bold">ROLE: EXECUTIVE</span><span class="font-mono-badge text-mono-badge px-1.5 py-0.5 bg-accent-gold-subtle text-on-secondary-container font-semibold">TIER-1 RBAC</span></div></div><div class="mt-space-md mb-space-sm"><div class="relative flex items-center bg-surface w-full h-11 px-3"><span class="material-symbols-outlined text-text-muted text-[18px] mr-2">search</span><input class="w-full bg-transparent font-body-sm text-body-sm text-text-primary placeholder:text-text-muted focus:outline-none" placeholder="ค้นหาข้อมูล, รหัสภารกิจ, เอกสาร..." type="text"/></div></div><div class="pt-space-xs flex flex-col gap-1"><span class="font-mono-badge text-[10px] text-text-muted uppercase tracking-wider px-2 py-1">เมนูการจัดการระบบ (ADMIN &amp; CORE)</span><a class="flex items-center gap-3 h-11 px-3 text-text-primary active:bg-surface-subtle font-body-sm text-body-sm font-medium" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px] text-text-secondary">dashboard</span>ภาพรวมระบบบริหาร</a><a class="flex items-center gap-3 h-11 px-3 text-text-primary active:bg-surface-subtle font-body-sm text-body-sm font-medium" data-path="tasks-and-projects" href="#"><span class="material-symbols-outlined text-[20px] text-text-secondary">task_alt</span>ภารกิจ &amp; โครงการราชวิทยาลัย</a><a class="flex items-center gap-3 h-11 px-3 text-text-primary active:bg-surface-subtle font-body-sm text-body-sm font-medium" data-path="vehicle-fleet" href="#"><span class="material-symbols-outlined text-[20px] text-text-secondary">directions_car</span>ยานพาหนะและการเดินทาง</a><a class="flex items-center gap-3 h-11 px-3 text-text-primary active:bg-surface-subtle font-body-sm text-body-sm font-medium" data-path="resolutions-and-ai" href="#"><span class="material-symbols-outlined text-[20px] text-text-secondary">psychology</span>มติสภา &amp; ระบบปัญญาประดิษฐ์</a><a class="flex items-center gap-3 h-11 px-3 text-text-primary active:bg-surface-subtle font-body-sm text-body-sm font-medium" data-path="user-management" href="#"><span class="material-symbols-outlined text-[20px] text-text-secondary">admin_panel_settings</span>ระบบบริหารจัดการผู้ใช้ (RBAC)</a><a class="flex items-center gap-3 h-11 px-3 text-text-primary active:bg-surface-subtle font-body-sm text-body-sm font-medium" data-path="meeting-resolutions" href="#"><span class="material-symbols-outlined text-[20px] text-text-secondary">gavel</span>คลังมติที่ประชุมสภาสถาบัน</a><a class="flex items-center gap-3 h-11 px-3 text-text-primary active:bg-surface-subtle font-body-sm text-body-sm font-medium" data-path="knowledge-base" href="#"><span class="material-symbols-outlined text-[20px] text-text-secondary">auto_stories</span>คลังสารสนเทศพระปริยัติธรรม</a></div></div><div class="p-screen-margin-mobile bg-surface-subtle flex items-center justify-between"><div class="flex items-center gap-2"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAbbLfm2PYRJKBfdT0M-90yMAOdPZ_qNkiPpt92LIFhYsR8t50yPTtaZ-psGW54AfmovhhqNREh9Ft8nVQL2KsaHIq2kMjbY1nR5xHdEaeryBlDqHA0hi3__xOcI76zgk_6yAoJfsgOA3hDP6SPnn0SZTbgHj2UTUHlwn65pg8GAwMVL87zEVYw4oMX1V-wt6GVRS4kOQPwgS_CX1bYrQe0VOsT05VVP6qkTJ_JesjcvTTwz7_gc077w"/><div class="flex flex-col"><span class="font-label-sm text-label-sm font-semibold text-text-primary leading-tight">ผู้ดูแลระบบกลาง</span><span class="font-mono-badge text-[10px] text-text-muted">ADMIN@MVUSYS.AC.TH</span></div></div><button aria-label="ออกจากระบบ" class="w-11 h-11 flex items-center justify-center text-error active:bg-error-container/20" type="button"><span class="material-symbols-outlined text-[20px]">logout</span></button></div></aside><main class="flex-1 flex flex-col relative w-full pt-16 pb-20 bg-surface min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full px-screen-margin-mobile pb-space-2xl space-y-space-md">
+<div class="flex flex-col space-y-space-xs pt-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-space-xs">
+<span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
+<span class="font-mono-badge text-mono-badge text-status-success uppercase tracking-wider">FLEET DISPATCH // LIVE-SYNC</span>
+</div>
+<span class="font-mono-badge text-mono-badge text-text-muted bg-surface-subtle px-space-xs py-space-2xs rounded-lg">SYS.NODE #FL-09</span>
+</div>
+<div class="flex items-baseline justify-between">
+<h1 class="font-headline-md text-headline-md text-text-primary tracking-tight">ศูนย์บริหารจัดการยานพาหนะ</h1>
+<span class="font-mono-badge text-mono-badge text-text-muted">4 คันในระบบ</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary">ระบบจองยานพาหนะ ตรวจสอบสถานะการเดินทาง และบันทึกมาตรวัดระยะทาง</p>
+</div>
+<div class="flex p-space-2xs bg-surface-subtle rounded-lg">
+<button class="flex-1 py-space-xs rounded-lg font-label-md text-label-md transition-all duration-200 bg-surface-card text-text-primary shadow-sm flex items-center justify-center space-x-1" id="tab-fleet" onclick="switchFleetTab('fleet')" type="button">
+<span class="material-symbols-outlined text-[16px]">directions_car</span>
+<span>สถานะยานพาหนะ</span>
+</button>
+<button class="flex-1 py-space-xs rounded-lg font-label-md text-label-md transition-all duration-200 text-text-secondary flex items-center justify-center space-x-1" id="tab-booking" onclick="switchFleetTab('booking')" type="button">
+<span class="material-symbols-outlined text-[16px]">assignment_add</span>
+<span>จอง &amp; บันทึกเลขไมล์</span>
+<span class="w-2 h-2 rounded-full bg-secondary-container inline-block ml-1"></span>
+</button>
+</div>
+<div class="flex flex-col space-y-space-md" id="view-fleet">
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="bg-surface-card p-card-padding-mobile rounded-lg shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-text-muted">
+<span class="font-label-sm text-label-sm">พร้อมปฏิบัติการ</span>
+<span class="material-symbols-outlined text-status-success text-[18px]">check_circle</span>
+</div>
+<div class="mt-space-xs flex items-baseline space-x-1">
+<span class="font-headline-lg text-headline-lg text-text-primary font-bold">2</span>
+<span class="font-body-sm text-body-sm text-text-secondary">/ 4 คัน</span>
+</div>
+<div class="w-full bg-surface-subtle h-1 rounded-full overflow-hidden mt-space-xs">
+<div class="bg-status-success h-full w-1/2"></div>
+</div>
+</div>
+<div class="bg-surface-card p-card-padding-mobile rounded-lg shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-text-muted">
+<span class="font-label-sm text-label-sm">กำลังเดินทาง / รอส่งมอบ</span>
+<span class="material-symbols-outlined text-status-warning text-[18px]">near_me</span>
+</div>
+<div class="mt-space-xs flex items-baseline space-x-1">
+<span class="font-headline-lg text-headline-lg text-text-primary font-bold">2</span>
+<span class="font-body-sm text-body-sm text-text-secondary">รายการ</span>
+</div>
+<div class="w-full bg-surface-subtle h-1 rounded-full overflow-hidden mt-space-xs">
+<div class="bg-secondary-container h-full w-full"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-xs">
+<span class="font-label-md text-label-md text-text-primary font-semibold uppercase tracking-wider">บัญชียานพาหนะราชวิทยาลัย</span>
+<span class="font-mono-badge text-mono-badge text-text-muted">REALTIME TELEMETRY</span>
+</div>
+<div class="bg-surface-card rounded-lg shadow-sm overflow-hidden">
+<div class="p-card-padding-mobile flex flex-col space-y-space-sm">
+<div class="flex items-start justify-between">
+<div class="flex space-x-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-subtle flex items-center justify-center text-text-primary">
+<span class="material-symbols-outlined text-[20px]">airport_shuttle</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center space-x-space-xs">
+<span class="font-headline-sm text-headline-sm text-text-primary font-semibold">Toyota Commuter VIP</span>
+<span class="font-mono-badge text-mono-badge px-1.5 py-0.5 rounded-lg bg-accent-gold-subtle text-on-secondary-container font-semibold">VIP TIER-1</span>
+</div>
+<span class="font-mono-data text-mono-data text-text-secondary">ทะเบียน นข-4421 นครปฐม</span>
+</div>
+</div>
+<span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+<span>พร้อมใช้งาน</span>
+</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs bg-surface-subtle p-space-xs rounded-lg">
+<div class="flex flex-col px-space-xs py-space-2xs">
+<span class="font-label-sm text-label-sm text-text-muted">ระดับน้ำมันคงเหลือ</span>
+<div class="flex items-center space-x-space-xs mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-text-secondary">local_gas_station</span>
+<span class="font-mono-data text-mono-data text-text-primary font-bold">85% (เต็มถัง)</span>
+</div>
+</div>
+<div class="flex flex-col px-space-xs py-space-2xs">
+<span class="font-label-sm text-label-sm text-text-muted">เลขไมล์ปัจจุบัน</span>
+<div class="flex items-center space-x-space-xs mt-0.5">
+<span class="material-symbols-outlined text-[14px] text-text-secondary">speed</span>
+<span class="font-mono-data text-mono-data text-text-primary font-bold">45,210 กม.</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-2xs text-text-muted font-body-sm text-body-sm">
+<span class="flex items-center gap-1 text-[12px]">
+<span class="material-symbols-outlined text-[14px]">event_available</span> รอบบำรุงรักษาถัดไป 50,000 กม.
+          </span>
+<button class="font-label-sm text-label-sm text-primary font-semibold hover:underline" onclick="selectFleetForBooking('Toyota Commuter VIP (นข-4421)')" type="button">
+            เลือกจัดคิว →
+          </button>
+</div>
+</div>
+</div>
+<div class="bg-surface-card rounded-lg shadow-sm overflow-hidden">
+<div class="p-card-padding-mobile flex flex-col space-y-space-sm">
+<div class="flex items-start justify-between">
+<div class="flex space-x-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-subtle flex items-center justify-center text-text-primary">
+<span class="material-symbols-outlined text-[20px]">directions_car</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center space-x-space-xs">
+<span class="font-headline-sm text-headline-sm text-text-primary font-semibold">รถประจำตำแหน่งอธิการ</span>
+<span class="font-mono-badge text-mono-badge px-1.5 py-0.5 rounded-lg bg-surface-container-high text-primary-container font-semibold">EXECUTIVE</span>
+</div>
+<span class="font-mono-data text-mono-data text-text-secondary">ทะเบียน ฮภ-2910 กรุงเทพฯ</span>
+</div>
+</div>
+<span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-status-warning-bg text-status-warning font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-status-warning"></span>
+<span>ติดภารกิจ</span>
+</span>
+</div>
+<div class="bg-surface-subtle p-space-xs rounded-lg flex flex-col space-y-space-2xs">
+<div class="flex items-center justify-between text-body-sm">
+<span class="font-label-sm text-label-sm text-text-secondary">พนักงานขับรถ:</span>
+<span class="font-body-sm text-body-sm text-text-primary font-medium">นายสมหมาย ใจภักดี (สาย 02)</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="font-label-sm text-label-sm text-text-secondary">ปลายทางภารกิจ:</span>
+<span class="font-body-sm text-body-sm text-text-primary font-medium truncate max-w-[190px]">วัดบวรนิเวศวิหาร กรุงเทพมหานคร</span>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="font-label-sm text-label-sm text-text-secondary">เวลาเดินทางกลับโดยประมาณ:</span>
+<span class="font-mono-data text-mono-data text-status-warning font-bold">วันนี้ 16:30 น.</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-card rounded-lg shadow-sm overflow-hidden">
+<div class="p-card-padding-mobile flex flex-col space-y-space-sm">
+<div class="flex items-start justify-between">
+<div class="flex space-x-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-subtle flex items-center justify-center text-text-primary">
+<span class="material-symbols-outlined text-[20px]">local_shipping</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center space-x-space-xs">
+<span class="font-headline-sm text-headline-sm text-text-primary font-semibold">Isuzu D-Max ขนสัมภาระ</span>
+<span class="font-mono-badge text-mono-badge px-1.5 py-0.5 rounded-lg bg-surface-subtle text-text-secondary font-semibold">LOGISTICS</span>
+</div>
+<span class="font-mono-data text-mono-data text-text-secondary">ทะเบียน บง-8812 นครปฐม</span>
+</div>
+</div>
+<span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+<span>พร้อมใช้งาน</span>
+</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs bg-surface-subtle p-space-xs rounded-lg">
+<div class="flex flex-col px-space-xs py-space-2xs">
+<span class="font-label-sm text-label-sm text-text-muted">ความจุกระบะ</span>
+<span class="font-mono-data text-mono-data text-text-primary font-bold">1,050 กก. บรรทุกเต็ม</span>
+</div>
+<div class="flex flex-col px-space-xs py-space-2xs">
+<span class="font-label-sm text-label-sm text-text-muted">เลขไมล์สะสม</span>
+<span class="font-mono-data text-mono-data text-text-primary font-bold">92,440 กม.</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-card rounded-lg shadow-sm overflow-hidden">
+<div class="p-card-padding-mobile flex flex-col space-y-space-sm">
+<div class="flex items-start justify-between">
+<div class="flex space-x-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-subtle flex items-center justify-center text-text-primary">
+<span class="material-symbols-outlined text-[20px]">directions_bus</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center space-x-space-xs">
+<span class="font-headline-sm text-headline-sm text-text-primary font-semibold">รถบัสปรับอากาศ 6 ล้อ</span>
+<span class="font-mono-badge text-mono-badge px-1.5 py-0.5 rounded-lg bg-surface-container text-text-primary font-semibold">ACADEMIC-BUS</span>
+</div>
+<span class="font-mono-data text-mono-data text-text-secondary">ทะเบียน 40-1129 กทม. (30 ที่นั่ง)</span>
+</div>
+</div>
+<span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-accent-gold-subtle text-on-secondary-container font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span>
+<span>รออนุมัติคำขอ</span>
+</span>
+</div>
+<div class="bg-surface-subtle p-space-xs rounded-lg flex flex-col space-y-1">
+<span class="font-label-sm text-label-sm text-text-muted">ภารกิจที่ร้องขอ:</span>
+<p class="font-body-sm text-body-sm text-text-primary font-medium">โครงการสอบบาลีสนามหลวง ชั้นเปรียญธรรม สำนักเรียนภาค ๑๔</p>
+<div class="flex items-center justify-between pt-1">
+<span class="font-mono-badge text-mono-badge text-text-muted">รหัสคำขอ: REQ-2567-089</span>
+<button class="font-label-sm text-label-sm text-primary font-semibold underline" onclick="switchFleetTab('booking')" type="button">ตรวจสอบคำขอ →</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="hidden flex flex-col space-y-space-md" id="view-booking">
+<div class="bg-surface-card rounded-lg shadow-sm p-card-padding-mobile flex flex-col space-y-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div>
+<span class="font-mono-badge text-mono-badge text-text-muted uppercase">DISPATCH FORM // REQ-NEW</span>
+<h2 class="font-headline-sm text-headline-sm text-text-primary font-semibold">แบบฟอร์มบันทึกการขอใช้รถ &amp; จัดการคิว</h2>
+</div>
+<span class="material-symbols-outlined text-text-muted">edit_calendar</span>
+</div>
+<div class="flex flex-col space-y-space-xs">
+<label class="font-label-md text-label-md text-text-secondary" for="car-select">ยานพาหนะที่ต้องการจัดคิว</label>
+<div class="relative flex items-center bg-surface-subtle rounded-lg px-space-sm h-table-row-height">
+<span class="material-symbols-outlined text-text-muted text-[20px] mr-2">directions_car</span>
+<select class="w-full bg-transparent font-body-sm text-body-sm text-text-primary focus:outline-none appearance-none" id="car-select">
+<option value="Toyota Commuter VIP (นข-4421)">Toyota Commuter VIP (นข-4421) - ว่าง</option>
+<option value="Isuzu D-Max ขนสัมภาระ (บง-8812)">Isuzu D-Max ขนสัมภาระ (บง-8812) - ว่าง</option>
+<option value="รถบัสปรับอากาศ 6 ล้อ (40-1129)">รถบัสปรับอากาศ 6 ล้อ (40-1129) - คำขอค้างตรวจ</option>
+<option disabled="" value="รถประจำตำแหน่ง (ฮภ-2910)">รถประจำตำแหน่ง (ฮภ-2910) - ติดภารกิจ</option>
+</select>
+<span class="material-symbols-outlined text-text-muted text-[18px] pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col space-y-space-xs">
+<label class="font-label-md text-label-md text-text-secondary" for="booking-purpose">วัตถุประสงค์การเดินทาง / สถานที่ปลายทาง</label>
+<div class="relative flex items-center bg-surface-subtle rounded-lg px-space-sm h-table-row-height">
+<span class="material-symbols-outlined text-text-muted text-[20px] mr-2">pin_drop</span>
+<input class="w-full bg-transparent font-body-sm text-body-sm text-text-primary focus:outline-none" id="booking-purpose" type="text" value="การประชุมวิชาการพระไตรปิฎกสากล มมร. ศาลายา"/>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="flex flex-col space-y-space-xs">
+<label class="font-label-md text-label-md text-text-secondary">วันเวลา ออกเดินทาง</label>
+<div class="bg-surface-subtle rounded-lg p-space-xs h-table-row-height flex items-center">
+<input class="w-full bg-transparent font-mono-data text-mono-data text-text-primary focus:outline-none" type="text" value="18 พ.ย. 67 (08:30)"/>
+</div>
+</div>
+<div class="flex flex-col space-y-space-xs">
+<label class="font-label-md text-label-md text-text-secondary">วันเวลา เดินทางกลับ</label>
+<div class="bg-surface-subtle rounded-lg p-space-xs h-table-row-height flex items-center">
+<input class="w-full bg-transparent font-mono-data text-mono-data text-text-primary focus:outline-none" type="text" value="18 พ.ย. 67 (17:00)"/>
+</div>
+</div>
+</div>
+<div class="bg-surface-subtle p-space-sm rounded-lg flex flex-col space-y-space-xs">
+<span class="font-label-sm text-label-sm text-text-muted">จำนวนผู้โดยสาร (รูป/คน)</span>
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">diversity_3</span>
+<span class="font-body-sm text-body-sm text-text-primary font-medium">พระเถระ 3 รูป, ฆราวาส/เจ้าหน้าที่ 4 คน</span>
+</div>
+<span class="font-mono-data text-mono-data px-2 py-0.5 bg-surface-card rounded-lg font-bold text-text-primary">รวม 7 ท่าน</span>
+</div>
+</div>
+<div class="bg-surface-card rounded-lg p-space-sm shadow-xs flex flex-col space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-space-xs">
+<span class="material-symbols-outlined text-text-primary text-[20px]">speed</span>
+<span class="font-label-md text-label-md text-text-primary font-semibold">บันทึกมาตรวัดระยะทาง (Odometer Log)</span>
+</div>
+<span class="font-mono-badge text-mono-badge text-status-success font-semibold">VERIFIED GPS</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="flex flex-col space-y-space-xs">
+<span class="font-label-sm text-label-sm text-text-secondary">เลขไมล์ก่อนเดินทาง (Departure)</span>
+<div class="bg-surface-subtle rounded-lg px-space-sm h-table-row-height flex items-center">
+<input class="w-full bg-transparent font-mono-data text-mono-data text-text-primary font-bold focus:outline-none" id="odo-start" oninput="calculateTripDistance()" type="number" value="45210"/>
+<span class="text-text-muted text-[11px] font-mono-badge">KM</span>
+</div>
+</div>
+<div class="flex flex-col space-y-space-xs">
+<span class="font-label-sm text-label-sm text-text-secondary">เลขไมล์สิ้นสุด (Return)</span>
+<div class="bg-surface-subtle rounded-lg px-space-sm h-table-row-height flex items-center">
+<input class="w-full bg-transparent font-mono-data text-mono-data text-text-primary font-bold focus:outline-none" id="odo-end" oninput="calculateTripDistance()" type="number" value="45345"/>
+<span class="text-text-muted text-[11px] font-mono-badge">KM</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between p-space-xs bg-surface-subtle rounded-lg">
+<span class="font-body-sm text-body-sm text-text-secondary">ระยะทางสุทธิของภารกิจนี้:</span>
+<span class="font-mono-data text-mono-data text-text-primary font-bold" id="trip-distance">135.00 กิโลเมตร</span>
+</div>
+</div>
+<div class="flex flex-col space-y-space-xs pt-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-mono-badge text-mono-badge text-text-muted uppercase tracking-wider">VEHICLE ADMIN APPROVAL WORKFLOW</span>
+<span class="font-mono-badge text-mono-badge text-status-warning bg-status-warning-bg px-1.5 py-0.5 rounded-lg">PENDING SIGN-OFF</span>
+</div>
+<div class="hidden p-space-xs rounded-lg bg-status-success-bg text-status-success font-body-sm text-body-sm flex items-center space-x-2" id="approval-notice">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>อนุมัติคำขอเดินทางและจัดส่งคิวรถเรียบร้อยแล้ว แจ้งเตือนคนขับและผู้ร้องขอผ่าน SMS</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm pt-space-xs">
+<button class="h-10 bg-primary-container text-on-primary rounded-lg font-label-md text-label-md font-semibold active:scale-[0.98] transition-transform flex items-center justify-center space-x-1 shadow-sm" id="btn-approve" onclick="handleApproveDispatch()" type="button">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span>อนุมัติคำขอ &amp; ออกใบสั่ง</span>
+</button>
+<button class="h-10 bg-surface-subtle text-error rounded-lg font-label-md text-label-md font-semibold active:scale-[0.98] transition-transform flex items-center justify-center space-x-1" onclick="handleRejectDispatch()" type="button">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+<span>ระงับ / ส่งกลับแก้ไข</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-card rounded-lg shadow-sm p-card-padding-mobile flex flex-col space-y-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-text-primary font-semibold">ระเบียบปฏิบัติการใช้ยานพาหนะส่วนกลาง</span>
+<span class="material-symbols-outlined text-text-muted text-[18px]">info</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary leading-relaxed">
+        คำขอใช้ยานพาหนะนอกเขตจังหวัดนครปฐมต้องได้รับการลงนามอนุมัติล่วงหน้าอย่างน้อย ๒๔ ชั่วโมง ทั้งนี้พนักงานขับรถต้องบันทึกภาพถ่ายมาตรวัดระยะทางร่วมกับระบบ mvusys Telemetry ทุกครั้งหลังจบภารกิจ
+      </p>
+</div>
+</div>
+</div>
+<script>
+function switchFleetTab(tabName) {
+  const fleetView = document.getElementById('view-fleet');
+  const bookingView = document.getElementById('view-booking');
+  const tabFleet = document.getElementById('tab-fleet');
+  const tabBooking = document.getElementById('tab-booking');
+
+  if (tabName === 'fleet') {
+    fleetView.classList.remove('hidden');
+    bookingView.classList.add('hidden');
+    tabFleet.classList.add('bg-surface-card', 'text-text-primary', 'shadow-sm');
+    tabFleet.classList.remove('text-text-secondary');
+    tabBooking.classList.remove('bg-surface-card', 'text-text-primary', 'shadow-sm');
+    tabBooking.classList.add('text-text-secondary');
+  } else {
+    fleetView.classList.add('hidden');
+    bookingView.classList.remove('hidden');
+    tabBooking.classList.add('bg-surface-card', 'text-text-primary', 'shadow-sm');
+    tabBooking.classList.remove('text-text-secondary');
+    tabFleet.classList.remove('bg-surface-card', 'text-text-primary', 'shadow-sm');
+    tabFleet.classList.add('text-text-secondary');
+  }
+}
+
+function selectFleetForBooking(vehicleName) {
+  switchFleetTab('booking');
+  const carSelect = document.getElementById('car-select');
+  if (carSelect) {
+    carSelect.value = vehicleName;
+  }
+}
+
+function calculateTripDistance() {
+  const start = parseFloat(document.getElementById('odo-start').value) || 0;
+  const end = parseFloat(document.getElementById('odo-end').value) || 0;
+  const distance = Math.max(0, end - start);
+  document.getElementById('trip-distance').innerText = distance.toFixed(2) + ' กิโลเมตร';
+}
+
+function handleApproveDispatch() {
+  const notice = document.getElementById('approval-notice');
+  const btn = document.getElementById('btn-approve');
+  if (notice) {
+    notice.classList.remove('hidden');
+  }
+  if (btn) {
+    btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">verified</span><span>จัดคิวเรียบร้อยแล้ว</span>';
+    btn.classList.add('bg-status-success');
+    btn.classList.remove('bg-primary-container');
+  }
+}
+
+function handleRejectDispatch() {
+  const notice = document.getElementById('approval-notice');
+  if (notice) {
+    notice.classList.remove('hidden', 'bg-status-success-bg', 'text-status-success');
+    notice.classList.add('bg-status-danger-bg', 'text-status-danger');
+    notice.innerHTML = '<span class="material-symbols-outlined text-[18px]">info</span><span>ปฏิเสธคำขอและแจ้งเตือนผู้เสนอแล้ว</span>';
+  }
+}
+</script></main><nav class="fixed bottom-0 inset-x-0 z-40 pb-safe bg-surface-card/95 backdrop-blur-xl shadow-[0_-2px_12px_rgba(11,27,52,0.06)]" data-active-classes="text-primary font-semibold relative after:content-[''] after:absolute after:bottom-1 after:w-5 after:h-0.5 after:bg-primary-container"><div class="flex justify-around items-center h-16 px-1 max-w-lg mx-auto"><a aria-label="ภาพรวม" class="flex flex-col items-center justify-center gap-1 w-16 h-14 text-text-secondary transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[22px]">space_dashboard</span><span class="font-label-sm text-[11px] leading-tight text-center">ภาพรวม</span></a><a aria-label="ภารกิจและโครงการ" class="flex flex-col items-center justify-center gap-1 w-16 h-14 text-text-secondary transition-colors" data-path="tasks-and-projects" href="#"><span class="material-symbols-outlined text-[22px]">assignment</span><span class="font-label-sm text-[11px] leading-tight text-center">ภารกิจ</span></a><a aria-current="page" aria-label="ยานพาหนะ" class="flex flex-col items-center justify-center gap-1 w-16 h-14 transition-colors text-primary font-semibold relative after:content-[''] after:absolute after:bottom-1 after:w-5 after:h-0.5 after:bg-primary-container" data-path="vehicle-fleet" href="#"><span class="material-symbols-outlined text-[22px]">local_shipping</span><span class="font-label-sm text-[11px] leading-tight text-center">ยานพาหนะ</span></a><a aria-label="มติและปัญญาประดิษฐ์" class="flex flex-col items-center justify-center gap-1 w-16 h-14 text-text-secondary transition-colors" data-path="resolutions-and-ai" href="#"><span class="material-symbols-outlined text-[22px]">smart_toy</span><span class="font-label-sm text-[11px] leading-tight text-center">มติ &amp; AI</span></a></div></nav><script>(function(){const openBtn=document.getElementById('btn-drawer-open');const closeBtn=document.getElementById('btn-drawer-close');const backdrop=document.getElementById('drawer-backdrop');const drawer=document.getElementById('drawer-menu');function openMenu(){drawer.classList.remove('-translate-x-full');backdrop.classList.remove('opacity-0','pointer-events-none');backdrop.classList.add('opacity-100');}function closeMenu(){drawer.classList.add('-translate-x-full');backdrop.classList.remove('opacity-100');backdrop.classList.add('opacity-0','pointer-events-none');}if(openBtn){openBtn.addEventListener('click',openMenu);}if(closeBtn){closeBtn.addEventListener('click',closeMenu);}if(backdrop){backdrop.addEventListener('click',closeMenu);}})();</script></body></html>

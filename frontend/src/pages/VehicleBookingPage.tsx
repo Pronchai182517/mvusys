@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { VehicleBooking, Vehicle } from '../types';
-import { Plus, Search, Filter, Car, Clock, MapPin, Users, CheckCircle, XCircle, Flag } from 'lucide-react';
 
 export const VehicleBookingPage: React.FC = () => {
   const [bookings, setBookings] = useState<VehicleBooking[]>([]);
@@ -72,7 +71,6 @@ export const VehicleBookingPage: React.FC = () => {
       resetForm();
       loadData();
       
-      // Show notification toast
       setToastMessage('แจ้งเตือนไปยังกลุ่มจองรถ: Line, Telegram, WhatsApp, Gmail เรียบร้อยแล้ว');
       setTimeout(() => setToastMessage(''), 5000);
     } else {
@@ -93,13 +91,12 @@ export const VehicleBookingPage: React.FC = () => {
   };
 
   const handleStatusChange = async (id: number, status: string) => {
-    // If confirming, you could prompt for admin name, or just use a default for demo
     const officerName = status === 'Confirmed' ? 'ผู้ดูแลระบบจองรถ' : undefined;
     const res = await api.updateVehicleBookingStatus(id, status, officerName);
     loadData();
 
     if (res.success && status === 'Confirmed') {
-      setToastMessage('อนุมัติการจองและแจ้งเตือนไปยังกลุ่ม Line, Telegram, WhatsApp, Gmail เรียบร้อยแล้ว');
+      setToastMessage('อนุมัติการจองและแจ้งเตือนเรียบร้อยแล้ว');
       setTimeout(() => setToastMessage(''), 5000);
     }
   };
@@ -127,202 +124,226 @@ export const VehicleBookingPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn relative">
+    <div className="w-full max-w-4xl mx-auto animate-fadeIn relative">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-emerald-500 text-white px-6 py-3 rounded-2xl shadow-xl shadow-emerald-500/20 flex items-center gap-3 animate-slideDown">
-          <CheckCircle className="w-5 h-5" />
-          <span className="text-sm font-medium">{toastMessage}</span>
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-status-success text-on-primary px-space-md py-space-sm rounded-[8px] shadow-lg flex items-center gap-2 animate-fadeIn">
+          <span className="material-symbols-outlined text-[20px]">check_circle</span>
+          <span className="font-label-sm text-[13px] font-bold">{toastMessage}</span>
         </div>
       )}
 
       {/* Header & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-panel p-6 rounded-2xl border border-slate-800">
+      <div className="px-screen-margin-mobile pt-space-md pb-space-sm bg-surface flex flex-col sm:flex-row sm:items-start justify-between gap-space-md border-b border-border-subtle sticky top-0 z-30">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            🚐 ระบบจองยานพาหนะ (Vehicle Booking)
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <div className="flex items-center gap-space-sm mb-space-xs">
+            <span className="material-symbols-outlined text-[24px] text-primary">local_shipping</span>
+            <h1 className="font-heading-lg text-heading-lg font-bold text-text-primary tracking-tight">ระบบจองยานพาหนะ</h1>
+          </div>
+          <p className="font-body-sm text-body-sm text-text-secondary leading-relaxed">
             จองรถตู้ รถปิคอัพ และรถ 6 ล้อ สำหรับปฏิบัติงาน พร้อมบันทึกเลขไมล์การเดินทาง
           </p>
         </div>
 
         <button
           onClick={() => setShowModal(true)}
-          className="px-4 py-2.5 rounded-xl bg-mvu-500 hover:bg-mvu-400 text-slate-950 font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-mvu-500/20 transition-all hover:scale-105"
+          className="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-primary text-on-primary px-space-md py-2.5 rounded-[8px] font-label-md text-[13px] font-bold active:scale-[0.98] transition-transform shadow-sm"
         >
-          <Plus className="w-4 h-4" /> จองยานพาหนะ
+          <span className="material-symbols-outlined text-[18px]">add</span>
+          จองยานพาหนะ
         </button>
       </div>
 
       {/* Booking List */}
-      {loading ? (
-        <div className="text-center py-12 text-slate-500 text-xs">กำลังโหลดรายการจอง...</div>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {bookings.map(booking => (
-            <div key={booking.id} className="glass-card p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
-                    {booking.vehicle_type === 'Van' ? 'รถตู้' : booking.vehicle_type === 'Pickup' ? 'รถปิคอัพ' : 'รถ 6 ล้อ'}
-                  </span>
-                  
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    booking.status === 'Pending' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                    booking.status === 'Confirmed' ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30' :
-                    booking.status === 'Completed' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
-                    'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                  }`}>
-                    {booking.status === 'Pending' && 'รอยืนยัน'}
-                    {booking.status === 'Confirmed' && 'ยืนยันแล้ว'}
-                    {booking.status === 'Completed' && 'เดินทางสำเร็จ'}
-                    {booking.status === 'Cancelled' && 'ยกเลิก'}
-                  </span>
-                </div>
+      <div className="px-screen-margin-mobile py-space-md">
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="flex items-center gap-2 text-primary">
+              <span className="material-symbols-outlined text-[24px] animate-spin">sync</span>
+              <span className="font-label-sm text-[13px] font-semibold">กำลังโหลดข้อมูล...</span>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-space-sm">
+            {bookings.map(booking => (
+              <div key={booking.id} className="bg-surface-card rounded-[12px] p-space-md border border-border-subtle shadow-sm flex flex-col space-y-space-sm relative overflow-hidden">
+                <div className={`absolute left-0 top-0 bottom-0 w-1 ${
+                  booking.status === 'Pending' ? 'bg-status-warning' :
+                  booking.status === 'Confirmed' ? 'bg-status-info' :
+                  booking.status === 'Completed' ? 'bg-status-success' : 'bg-status-error'
+                }`}></div>
 
-                <h3 className="text-base font-semibold text-white leading-snug">{booking.purpose}</h3>
-                
-                <div className="text-xs text-slate-400 grid grid-cols-2 gap-2">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-3.5 h-3.5 text-mvu-400" />
-                    <span>{booking.booking_date} ({booking.start_time}-{booking.end_time})</span>
+                <div className="pl-1 flex flex-col gap-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono-badge text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-surface-subtle text-text-secondary font-bold">
+                      {booking.vehicle_type === 'Van' ? 'รถตู้' : booking.vehicle_type === 'Pickup' ? 'รถปิคอัพ' : 'รถ 6 ล้อ'}
+                    </span>
+                    
+                    <span className={`font-mono-badge text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      booking.status === 'Pending' ? 'bg-status-warning/10 text-status-warning' :
+                      booking.status === 'Confirmed' ? 'bg-status-info/10 text-status-info' :
+                      booking.status === 'Completed' ? 'bg-status-success/10 text-status-success' :
+                      'bg-status-error/10 text-status-error'
+                    }`}>
+                      {booking.status === 'Pending' && 'รอยืนยัน'}
+                      {booking.status === 'Confirmed' && 'ยืนยันแล้ว'}
+                      {booking.status === 'Completed' && 'เดินทางสำเร็จ'}
+                      {booking.status === 'Cancelled' && 'ยกเลิก'}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Car className="w-3.5 h-3.5 text-mvu-400" />
-                    <span className="text-slate-200">{getVehicleName(booking.vehicle_id)}</span>
+
+                  <h3 className="font-label-md text-label-md font-bold text-text-primary leading-tight mt-1">{booking.purpose}</h3>
+                  
+                  <div className="font-body-sm text-body-sm text-text-secondary grid grid-cols-1 sm:grid-cols-2 gap-y-2 mt-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-[16px] text-primary">event</span>
+                      <span>{booking.booking_date} ({booking.start_time}-{booking.end_time})</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-[16px] text-primary">directions_car</span>
+                      <span className="font-semibold text-text-primary">{getVehicleName(booking.vehicle_id)}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-[16px] text-primary">location_on</span>
+                      <span className="truncate" title={booking.destination}>{booking.destination}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-[16px] text-primary">group</span>
+                      <span>{booking.passengers}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 col-span-1 sm:col-span-2">
+                      <span className="material-symbols-outlined text-[16px] text-text-muted">person</span>
+                      <span className="text-text-muted">ผู้จอง:</span>
+                      <span className="font-semibold text-text-primary">{booking.booker}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 col-span-1 sm:col-span-2">
+                      <span className="material-symbols-outlined text-[16px] text-text-muted">badge</span>
+                      <span className="text-text-muted">คนขับ:</span>
+                      <span className="font-semibold text-text-primary">{booking.driver}</span>
+                    </div>
+
+                    {(booking.admin_officer || booking.status === 'Confirmed') && (
+                      <div className="col-span-1 sm:col-span-2 mt-2 px-2 py-1.5 rounded-[4px] bg-status-success/10 border border-status-success/20 flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-[14px] text-status-success">verified_user</span>
+                        <span className="font-mono-badge text-[9px] uppercase font-bold text-status-success">ผู้อนุมัติ:</span>
+                        <span className="font-label-sm text-[11px] font-bold text-text-primary">{booking.admin_officer || 'ผู้ดูแลระบบจองรถ'}</span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-3.5 h-3.5 text-mvu-400" />
-                    <span>{booking.destination}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Users className="w-3.5 h-3.5 text-mvu-400" />
-                    <span>{booking.passengers}</span>
-                  </div>
-                  <div className="flex items-center gap-2 col-span-2">
-                    <span className="text-slate-500">ผู้จอง:</span>
-                    <span className="text-slate-300">{booking.booker}</span>
-                  </div>
-                  <div className="flex items-center gap-2 col-span-2">
-                    <span className="text-slate-500">คนขับ:</span>
-                    <span className="text-slate-300">{booking.driver}</span>
-                  </div>
-                  {(booking.admin_officer || booking.status === 'Confirmed') && (
-                    <div className="flex items-center gap-2 col-span-2 mt-1 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                      <span className="text-emerald-500/70 text-[10px] uppercase font-bold">ผู้อนุมัติ:</span>
-                      <span className="text-emerald-400 font-medium text-xs">{booking.admin_officer || 'ผู้ดูแลระบบจองรถ'}</span>
+
+                  {booking.status === 'Completed' && (
+                    <div className="mt-3 p-3 rounded-[8px] bg-surface-container border border-border-subtle grid grid-cols-3 gap-2 text-center divide-x divide-border-subtle">
+                      <div>
+                        <div className="font-label-sm text-[10px] text-text-muted mb-0.5">เลขไมล์ออก</div>
+                        <div className="font-mono text-[13px] font-semibold text-text-primary">{booking.mileage_start.toLocaleString()}</div>
+                      </div>
+                      <div>
+                        <div className="font-label-sm text-[10px] text-text-muted mb-0.5">เลขไมล์ถึง</div>
+                        <div className="font-mono text-[13px] font-semibold text-text-primary">{booking.mileage_end.toLocaleString()}</div>
+                      </div>
+                      <div>
+                        <div className="font-label-sm text-[10px] text-primary font-bold mb-0.5">รวมระยะทาง</div>
+                        <div className="font-mono text-[13px] font-bold text-primary">{booking.total_distance.toLocaleString()} km</div>
+                      </div>
                     </div>
                   )}
                 </div>
 
-                {booking.status === 'Completed' && (
-                  <div className="mt-2 p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-300 grid grid-cols-3 gap-2 text-center">
-                    <div>
-                      <div className="text-[10px] text-slate-500">เลขไมล์ออก</div>
-                      <div className="font-mono text-white">{booking.mileage_start.toLocaleString()}</div>
-                    </div>
-                    <div className="border-l border-slate-700/50">
-                      <div className="text-[10px] text-slate-500">เลขไมล์ถึง</div>
-                      <div className="font-mono text-white">{booking.mileage_end.toLocaleString()}</div>
-                    </div>
-                    <div className="border-l border-slate-700/50">
-                      <div className="text-[10px] text-mvu-400">รวมระยะทาง</div>
-                      <div className="font-mono text-mvu-400 font-bold">{booking.total_distance.toLocaleString()} km</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-end gap-2">
-                {booking.status === 'Pending' && (
-                  <>
+                {/* Action Buttons */}
+                <div className="pt-3 border-t border-border-subtle flex flex-wrap items-center justify-end gap-2 pl-1">
+                  {booking.status === 'Pending' && (
+                    <>
+                      <button
+                        onClick={() => handleStatusChange(booking.id, 'Confirmed')}
+                        className="px-3 py-1.5 rounded-[6px] bg-status-info/10 text-status-info font-label-sm text-[12px] font-bold active:bg-status-info/20 transition-colors flex items-center gap-1"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">check_circle</span> ยืนยันจอง
+                      </button>
+                      <button
+                        onClick={() => handleStatusChange(booking.id, 'Cancelled')}
+                        className="px-3 py-1.5 rounded-[6px] bg-status-error/10 text-status-error font-label-sm text-[12px] font-bold active:bg-status-error/20 transition-colors flex items-center gap-1"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">cancel</span> ยกเลิก
+                      </button>
+                    </>
+                  )}
+                  {booking.status === 'Confirmed' && (
                     <button
-                      onClick={() => handleStatusChange(booking.id, 'Confirmed')}
-                      className="px-3 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 text-xs font-medium border border-sky-500/30 transition-colors flex items-center gap-1.5"
+                      onClick={() => openMileageModal(booking.id)}
+                      className="w-full px-3 py-2 rounded-[6px] bg-status-success text-on-primary font-label-sm text-[12px] font-bold active:scale-[0.98] transition-transform flex items-center justify-center gap-1 shadow-sm"
                     >
-                      <CheckCircle className="w-3.5 h-3.5" /> ยืนยันจอง
+                      <span className="material-symbols-outlined text-[16px]">flag</span> บันทึกการเดินทางสำเร็จ
                     </button>
-                    <button
-                      onClick={() => handleStatusChange(booking.id, 'Cancelled')}
-                      className="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-medium border border-rose-500/30 transition-colors flex items-center gap-1.5"
-                    >
-                      <XCircle className="w-3.5 h-3.5" /> ยกเลิก
-                    </button>
-                  </>
-                )}
-                {booking.status === 'Confirmed' && (
-                  <button
-                    onClick={() => openMileageModal(booking.id)}
-                    className="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-medium border border-emerald-500/30 transition-colors flex items-center gap-1.5 w-full justify-center"
-                  >
-                    <Flag className="w-3.5 h-3.5" /> บันทึกการเดินทางสำเร็จ (กรอกเลขไมล์)
-                  </button>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Create Booking Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="glass-panel p-4 sm:p-6 rounded-2xl border border-slate-700 w-full max-w-2xl space-y-4 animate-scaleUp overflow-y-auto max-h-[90vh]">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Car className="w-5 h-5 text-mvu-400" /> ฟอร์มจองยานพาหนะ
-            </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface-overlay/60 backdrop-blur-sm">
+          <div className="bg-surface-card p-space-md rounded-[16px] border border-border-subtle w-full max-w-2xl shadow-xl animate-fadeIn overflow-y-auto max-h-[90vh]">
+            <div className="flex items-center justify-between mb-space-md border-b border-border-subtle pb-space-xs">
+              <h3 className="font-heading-sm text-[18px] font-bold text-text-primary flex items-center gap-2">
+                <span className="material-symbols-outlined text-[20px] text-primary">local_shipping</span> ฟอร์มจองยานพาหนะ
+              </h3>
+              <button onClick={() => setShowModal(false)} className="text-text-muted active:text-text-primary">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
 
             {errorMessage && (
-              <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
-                ⚠️ {errorMessage}
+              <div className="p-3 mb-4 rounded-[8px] bg-status-error/10 border border-status-error text-status-error font-body-sm text-[12px] font-bold flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px]">error</span> {errorMessage}
               </div>
             )}
 
-            <form onSubmit={handleCreate} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleCreate} className="space-y-space-md">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
                 <div>
-                  <label className="text-xs text-slate-400">วันที่ใช้งาน <span className="text-rose-500">*</span></label>
+                  <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">วันที่ใช้งาน <span className="text-status-error">*</span></label>
                   <input
                     type="date"
                     required
                     value={bookingDate}
                     onChange={e => setBookingDate(e.target.value)}
-                    className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500"
+                    className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-body-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-xs text-slate-400">เวลาเริ่ม <span className="text-rose-500">*</span></label>
+                    <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">เวลาเริ่ม <span className="text-status-error">*</span></label>
                     <input
                       type="time"
                       required
                       value={startTime}
                       onChange={e => setStartTime(e.target.value)}
-                      className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500"
+                      className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-body-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-slate-400">เวลาสิ้นสุด <span className="text-rose-500">*</span></label>
+                    <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">เวลาสิ้นสุด <span className="text-status-error">*</span></label>
                     <input
                       type="time"
                       required
                       value={endTime}
                       onChange={e => setEndTime(e.target.value)}
-                      className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500"
+                      className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-body-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
                 <div>
-                  <label className="text-xs text-slate-400">ประเภทรถ <span className="text-rose-500">*</span></label>
+                  <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">ประเภทรถ <span className="text-status-error">*</span></label>
                   <select
                     value={vehicleType}
                     onChange={e => setVehicleType(e.target.value as any)}
-                    className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500"
+                    className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-body-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                   >
                     <option value="Van">รถตู้ (มี 2 คัน)</option>
                     <option value="Pickup">รถปิคอัพ (มี 2 คัน)</option>
@@ -330,93 +351,91 @@ export const VehicleBookingPage: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-slate-400">เจ้าหน้าที่ดูแลระบบจองรถ <span className="text-rose-500">*</span></label>
+                  <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">ผู้อนุมัติ/ผู้รับผิดชอบ <span className="text-status-error">*</span></label>
                   <input
                     type="text"
                     required
-                    placeholder="ชื่อผู้อนุมัติ/ผู้รับผิดชอบการจอง"
+                    placeholder="ชื่อผู้อนุมัติ"
                     value={adminOfficer}
                     onChange={e => setAdminOfficer(e.target.value)}
-                    className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-emerald-500 focus:border-emerald-500/50"
+                    className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-body-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
                 <div>
-                  <label className="text-xs text-slate-400">ผู้จอง <span className="text-rose-500">*</span></label>
+                  <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">ชื่อผู้จอง <span className="text-status-error">*</span></label>
                   <input
                     type="text"
                     required
                     placeholder="ระบุชื่อผู้จอง"
                     value={booker}
                     onChange={e => setBooker(e.target.value)}
-                    className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs text-slate-400">จุดประสงค์ (ไปงาน) <span className="text-rose-500">*</span></label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="เช่น ไปราชการ, ขนของ"
-                    value={purpose}
-                    onChange={e => setPurpose(e.target.value)}
-                    className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500"
+                    className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-body-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-400">สถานที่ (ที่งาน) <span className="text-rose-500">*</span></label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="สถานที่ปฏิบัติงาน"
-                    value={destination}
-                    onChange={e => setDestination(e.target.value)}
-                    className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs text-slate-400">ผู้ร่วมเดินทาง <span className="text-rose-500">*</span></label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="เช่น 5 รูป/คน หรือ ระบุรายชื่อ"
-                    value={passengers}
-                    onChange={e => setPassengers(e.target.value)}
-                    className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-slate-400">คนขับ <span className="text-rose-500">*</span></label>
+                  <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">ชื่อคนขับ <span className="text-status-error">*</span></label>
                   <input
                     type="text"
                     required
                     placeholder="ระบุชื่อคนขับ"
                     value={driver}
                     onChange={e => setDriver(e.target.value)}
-                    className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500"
+                    className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-body-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4 border-t border-slate-800">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+                <div>
+                  <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">จุดประสงค์ <span className="text-status-error">*</span></label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="เช่น ไปราชการ, ขนของ"
+                    value={purpose}
+                    onChange={e => setPurpose(e.target.value)}
+                    className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-body-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">สถานที่ <span className="text-status-error">*</span></label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="สถานที่ปฏิบัติงาน"
+                    value={destination}
+                    onChange={e => setDestination(e.target.value)}
+                    className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-body-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">ผู้ร่วมเดินทาง <span className="text-status-error">*</span></label>
+                <input
+                  type="text"
+                  required
+                  placeholder="เช่น 5 รูป/คน หรือ ระบุรายชื่อ"
+                  value={passengers}
+                  onChange={e => setPassengers(e.target.value)}
+                  className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-body-sm text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4 border-t border-border-subtle mt-6">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs text-slate-400 hover:bg-slate-800 transition-colors"
+                  className="px-4 py-2 rounded-[8px] font-label-md text-[13px] font-bold text-text-secondary active:bg-surface-subtle transition-colors border border-border-subtle"
                 >
                   ยกเลิก
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-mvu-500 hover:bg-mvu-400 text-slate-950 font-semibold text-xs transition-colors shadow-lg shadow-mvu-500/20"
+                  className="px-4 py-2 rounded-[8px] bg-primary text-on-primary font-label-md text-[13px] font-bold active:scale-[0.98] transition-transform shadow-sm"
                 >
                   บันทึกการจอง
                 </button>
@@ -428,50 +447,50 @@ export const VehicleBookingPage: React.FC = () => {
 
       {/* Mileage Complete Modal */}
       {showMileageModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="glass-panel p-4 sm:p-6 rounded-2xl border border-slate-700 w-full max-w-sm space-y-4 animate-scaleUp">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Flag className="w-5 h-5 text-emerald-400" /> บันทึกการเดินทาง
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface-overlay/60 backdrop-blur-sm">
+          <div className="bg-surface-card p-space-md rounded-[16px] border border-border-subtle w-full max-w-sm shadow-xl animate-fadeIn">
+            <h3 className="font-heading-sm text-[18px] font-bold text-text-primary flex items-center gap-2 mb-4 border-b border-border-subtle pb-3">
+              <span className="material-symbols-outlined text-[20px] text-status-success">flag</span> บันทึกการเดินทาง
             </h3>
             
             <form onSubmit={handleCompleteTravel} className="space-y-4">
               <div>
-                <label className="text-xs text-slate-400">เลขไมล์ออก (Start Mileage) <span className="text-rose-500">*</span></label>
+                <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">เลขไมล์ออก (Start Mileage) <span className="text-status-error">*</span></label>
                 <input
                   type="number"
                   required
                   min="0"
                   value={mileageStart}
                   onChange={e => setMileageStart(e.target.value)}
-                  className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500 font-mono"
+                  className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-mono text-[14px] text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                   placeholder="เช่น 120500"
                 />
               </div>
               
               <div>
-                <label className="text-xs text-slate-400">เลขไมล์ถึง (End Mileage) <span className="text-rose-500">*</span></label>
+                <label className="font-label-sm text-[12px] font-bold text-text-secondary block mb-1">เลขไมล์ถึง (End Mileage) <span className="text-status-error">*</span></label>
                 <input
                   type="number"
                   required
                   min="0"
                   value={mileageEnd}
                   onChange={e => setMileageEnd(e.target.value)}
-                  className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500 font-mono"
+                  className="w-full bg-surface border border-border-subtle rounded-[8px] px-3 py-2 font-mono text-[14px] text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
                   placeholder="เช่น 120650"
                 />
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4 border-t border-slate-800">
+              <div className="flex justify-end space-x-3 pt-4 border-t border-border-subtle mt-2">
                 <button
                   type="button"
                   onClick={() => setShowMileageModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs text-slate-400 hover:bg-slate-800 transition-colors"
+                  className="px-4 py-2 rounded-[8px] font-label-md text-[13px] font-bold text-text-secondary active:bg-surface-subtle transition-colors"
                 >
                   ยกเลิก
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs transition-colors shadow-lg shadow-emerald-500/20"
+                  className="px-4 py-2 rounded-[8px] bg-status-success text-on-primary font-label-md text-[13px] font-bold active:scale-[0.98] transition-transform shadow-sm"
                 >
                   บันทึกสำเร็จ
                 </button>
