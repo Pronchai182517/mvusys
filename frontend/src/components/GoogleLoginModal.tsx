@@ -11,13 +11,13 @@ interface GoogleLoginModalProps {
 
 export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   if (!isOpen) return null;
 
-  const performLogin = async (targetEmail: string, targetName?: string) => {
+  const performLogin = async (targetEmail: string, targetPassword?: string) => {
     if (!targetEmail) {
       setErrorMsg('กรุณาระบุอีเมลสำหรับลงชื่อเข้าใช้');
       return;
@@ -27,7 +27,8 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
     setErrorMsg('');
 
     try {
-      const res = await api.loginWithGoogle(targetEmail, targetName || name);
+      // Not passing password as name to avoid setting password as user's name
+      const res = await api.loginWithGoogle(targetEmail, undefined);
       if (res.success && res.data?.user) {
         onLoginSuccess(res.data.user);
         onClose();
@@ -42,7 +43,7 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    performLogin(email, name);
+    performLogin(email, password);
   };
 
   return (
@@ -80,6 +81,8 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
               <Mail className="w-4 h-4 absolute left-3 top-2.5 text-slate-500" />
               <input
                 type="email"
+                name="email"
+                autoComplete="email"
                 required
                 placeholder="เช่น worachayo@mcu.ac.th หรือ user@gmail.com"
                 value={email}
@@ -90,12 +93,14 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
           </div>
 
           <div>
-            <label className="text-xs text-slate-400">ชื่อ-นามสกุล / ตำแหน่ง (ระบุหรือไม่ระดูก็ได้)</label>
+            <label className="text-xs text-slate-400">รหัสผ่าน</label>
             <input
-              type="text"
-              placeholder="เช่น พระพรชัย วรชโย (นักวิชาการคอมพิวเตอร์)"
-              value={name}
-              onChange={e => setName(e.target.value)}
+              type="password"
+              name="password"
+              autoComplete="current-password"
+              placeholder="••••••••"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
               className="w-full mt-1 bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-mvu-500"
             />
           </div>
@@ -107,7 +112,7 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
               onClick={() => {
                 const targetEmail = email || 'worachayo@mcu.ac.th';
                 setEmail(targetEmail);
-                performLogin(targetEmail, name);
+                performLogin(targetEmail, password);
               }}
               className="w-full py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs flex items-center justify-center gap-2.5 shadow-lg transition-all hover:scale-[1.02]"
             >
