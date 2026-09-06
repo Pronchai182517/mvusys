@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { Task } from '../types';
-import { Plus, Search, Filter, Clock, FileCheck, CheckCircle, AlertCircle, Sparkles } from 'lucide-react';
+import { Plus, Search, Filter, Clock, FileCheck, CheckCircle, AlertCircle, Sparkles, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 export const TasksPage: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -9,6 +9,8 @@ export const TasksPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showModal, setShowModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   // Form State
   const [title, setTitle] = useState('');
@@ -62,6 +64,20 @@ export const TasksPage: React.FC = () => {
     const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  // Reset page to 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
+
+  const totalItems = filteredTasks.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const currentTasks = filteredTasks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const goToFirstPage = () => setCurrentPage(1);
+  const goToPrevPage = () => setCurrentPage(prev => Math.max(1, prev - 1));
+  const goToNextPage = () => setCurrentPage(prev => Math.min(totalPages, prev + 1));
+  const goToLastPage = () => setCurrentPage(totalPages);
 
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -118,7 +134,7 @@ export const TasksPage: React.FC = () => {
         <div className="text-center py-12 text-slate-500 text-xs">กำลังโหลดรายการภารกิจ...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredTasks.map(task => (
+          {currentTasks.map(task => (
             <div key={task.id} className="glass-card p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4 hover:border-mvu-500/40">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -179,6 +195,50 @@ export const TasksPage: React.FC = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Pagination Status Bar */}
+      {!loading && totalItems > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 glass-card p-4 rounded-xl border border-slate-800 mt-6">
+          <div className="text-xs text-slate-400">
+            จำนวนงานทั้งหมด <strong className="text-white text-sm">{totalItems}</strong> รายการ 
+            (หน้า {currentPage} จาก {totalPages || 1})
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={goToFirstPage} 
+              disabled={currentPage === 1} 
+              className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="หน้าแรกสุด"
+            >
+              <ChevronsLeft className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={goToPrevPage} 
+              disabled={currentPage === 1} 
+              className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="หน้าก่อนหน้า"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={goToNextPage} 
+              disabled={currentPage === totalPages || totalPages === 0} 
+              className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="หน้าถัดไป"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={goToLastPage} 
+              disabled={currentPage === totalPages || totalPages === 0} 
+              className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="หน้าสุดท้าย"
+            >
+              <ChevronsRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       )}
 

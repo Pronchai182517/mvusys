@@ -1,4 +1,4 @@
-import { Task, Project, Resolution, KnowledgeItem, User } from '../types';
+import { Task, Project, Resolution, KnowledgeItem, User, Vehicle, VehicleBooking } from '../types';
 
 const API_BASE = '/api';
 
@@ -120,6 +120,14 @@ export const api = {
     });
     return await res.json();
   },
+  async verifyEmail(email: string) {
+    const res = await fetch(`${API_BASE}/auth/verify-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    return await res.json();
+  },
   async getUsers(): Promise<User[]> {
     const res = await fetch(`${API_BASE}/auth/users`);
     const data = await res.json();
@@ -146,5 +154,51 @@ export const api = {
       body: JSON.stringify(scopeData)
     });
     return await res.json();
+  },
+
+  // Vehicle Bookings
+  async getVehicles(): Promise<Vehicle[]> {
+    const res = await fetch(`${API_BASE}/vehicles`);
+    const data = await res.json();
+    return data.data || [];
+  },
+  async updateVehicleStatus(id: number, status: string): Promise<Vehicle> {
+    const res = await fetch(`${API_BASE}/vehicles/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    const data = await res.json();
+    return data.data;
+  },
+  async getVehicleBookings(): Promise<VehicleBooking[]> {
+    const res = await fetch(`${API_BASE}/vehicles/bookings`);
+    const data = await res.json();
+    return data.data || [];
+  },
+  async createVehicleBooking(booking: Partial<VehicleBooking>): Promise<{success: boolean; data?: VehicleBooking; message?: string}> {
+    const res = await fetch(`${API_BASE}/vehicles/book`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(booking)
+    });
+    return await res.json();
+  },
+  async updateVehicleBookingStatus(id: number, status: string, admin_officer?: string): Promise<{success: boolean; data?: VehicleBooking; notifications?: string[]}> {
+    const res = await fetch(`${API_BASE}/vehicles/book/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, admin_officer })
+    });
+    return await res.json();
+  },
+  async completeVehicleBooking(id: number, mileage_start: number, mileage_end: number): Promise<VehicleBooking> {
+    const res = await fetch(`${API_BASE}/vehicles/book/${id}/complete`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mileage_start, mileage_end })
+    });
+    const data = await res.json();
+    return data.data;
   }
 };

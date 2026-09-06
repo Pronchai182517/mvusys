@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'executive' | 'project_lead' | 'tracking_officer';
+export type UserRole = 'admin' | 'executive' | 'project_lead' | 'tracking_officer' | 'vehicle_admin';
 
 export interface User {
   id: string;
@@ -59,6 +59,34 @@ export interface KnowledgeItem {
   content: string;
   tags?: string;
   created_at?: string;
+}
+
+export interface Vehicle {
+  id: number;
+  type: 'Van' | 'Pickup' | '6-Wheel';
+  name: string;
+  license_plate: string;
+  status: 'Available' | 'Maintenance';
+}
+
+export interface VehicleBooking {
+  id: number;
+  booking_date: string;
+  start_time: string;
+  end_time: string;
+  booker: string;
+  vehicle_type: 'Van' | 'Pickup' | '6-Wheel';
+  vehicle_id: number | null;
+  driver: string;
+  purpose: string;
+  destination: string;
+  passengers: string;
+  status: 'Pending' | 'Confirmed' | 'Cancelled' | 'Completed';
+  admin_officer?: string;
+  mileage_start: number;
+  mileage_end: number;
+  total_distance: number;
+  created_at: string;
 }
 
 export interface Citation {

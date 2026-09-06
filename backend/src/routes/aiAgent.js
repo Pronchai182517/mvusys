@@ -41,15 +41,15 @@ router.post('/query', async (req, res) => {
   );
 
   const matchedResolutions = context.resolutions.filter(r => 
-    r.title.toLowerCase().includes(q) || r.details.toLowerCase().includes(q) || r.assignee.toLowerCase().includes(q)
+    r.title?.toLowerCase().includes(q) || r.details?.toLowerCase().includes(q) || r.assignee?.toLowerCase().includes(q)
   );
 
   const matchedProjects = context.projects.filter(p => 
-    p.name.toLowerCase().includes(q) || (p.objective && p.objective.toLowerCase().includes(q)) || p.owner.toLowerCase().includes(q)
+    p.name?.toLowerCase().includes(q) || p.objective?.toLowerCase().includes(q) || p.owner?.toLowerCase().includes(q)
   );
 
   const matchedTasks = context.tasks.filter(t => 
-    t.title.toLowerCase().includes(q) || t.assignee.toLowerCase().includes(q)
+    t.title?.toLowerCase().includes(q) || t.assignee?.toLowerCase().includes(q)
   );
 
   // Synthesize Response

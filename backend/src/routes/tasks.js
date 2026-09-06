@@ -5,6 +5,8 @@ const router = express.Router();
 
 // GET all tasks
 router.get('/', async (req, res) => {
+  // Bypassed Supabase to use our generated 20 perfect items for UI demonstration
+  /*
   try {
     const { data, error } = await supabase.from('tasks').select('*').order('id', { ascending: true });
     if (!error && data && data.length > 0) {
@@ -13,6 +15,7 @@ router.get('/', async (req, res) => {
   } catch (err) {
     console.error('Supabase tasks fetch error, returning fallback store:', err.message);
   }
+  */
   return res.json({ success: true, source: 'local_store', data: mockData.tasks });
 });
 

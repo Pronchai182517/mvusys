@@ -9,6 +9,7 @@ import knowledgeRouter from './routes/knowledge.js';
 import dashboardRouter from './routes/dashboard.js';
 import aiAgentRouter from './routes/aiAgent.js';
 import authRouter from './routes/auth.js';
+import vehiclesRouter from './routes/vehicles.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/api/resolutions', resolutionsRouter);
 app.use('/api/knowledge', knowledgeRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/ai-agent', aiAgentRouter);
+app.use('/api/vehicles', vehiclesRouter);
 
 app.get('/api/health', (req, res) => {
   res.json({

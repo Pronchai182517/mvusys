@@ -59,6 +59,9 @@ router.post('/google-login', async (req, res) => {
   const existingUser = mockData.users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
   if (existingUser) {
+    if (existingUser.status === 'Unverified') {
+      return res.status(403).json({ success: false, message: 'กรุณายืนยันอีเมลของคุณก่อนเข้าสู่ระบบ (Check your email inbox)' });
+    }
     return res.json({
       success: true,
       message: 'ลงชื่อเข้าใช้สำเร็จ',
@@ -132,7 +135,7 @@ router.post('/register', async (req, res) => {
     name,
     email,
     role: requestedRole || 'executive',
-    status: 'Pending',
+    status: 'Unverified',
     access_scope: 'department_only',
     allowed_departments: [userDepartment],
     title: title || 'สมาชิก มหาจุฬาลงกรณราชวิทยาลัย',
@@ -147,16 +150,38 @@ router.post('/register', async (req, res) => {
 
   return res.json({
     success: true,
-    message: 'ลงทะเบียนสมาชิกสำเร็จ! บัญชีของคุณเข้าสู่สถานะรอการอนุมัติสิทธิ์ส่วนงานโดย Admin',
-    data: newUser
+    message: 'ลงทะเบียนสมาชิกสำเร็จ! กรุณาตรวจสอบกล่องจดหมายอีเมลของคุณเพื่อยืนยันการสมัคร',
+    data: newUser,
+    verificationToken: `mock-token-${Date.now()}`
   });
+});
+
+// 2.5 Verify Email
+router.post('/verify-email', async (req, res) => {
+  const { email } = req.body;
+  const user = mockData.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+  
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'ไม่พบบัญชีผู้ใช้นี้' });
+  }
+  
+  if (user.status !== 'Unverified') {
+    return res.status(400).json({ success: false, message: 'อีเมลนี้ถูกยืนยันไปแล้ว' });
+  }
+
+  user.status = 'Active';
+  try {
+    await supabase.from('users').update({ status: 'Active' }).eq('id', user.id);
+  } catch (err) {}
+
+  return res.json({ success: true, message: 'ยืนยันอีเมลสำเร็จ คุณสามารถเข้าสู่ระบบได้แล้ว' });
 });
 
 // 3. Admin Only: Get all members list
 router.get('/users', async (req, res) => {
   try {
     const { data, error } = await supabase.from('users').select('*');
-    if (!error && data && data.length > 0) {
+    if (false) {
       return res.json({ success: true, data });
     }
   } catch (e) {}

@@ -80,9 +80,10 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
             <div className="relative mt-1">
               <Mail className="w-4 h-4 absolute left-3 top-2.5 text-slate-500" />
               <input
+                id="email"
                 type="email"
                 name="email"
-                autoComplete="email"
+                autoComplete="username"
                 required
                 placeholder="เช่น worachayo@mcu.ac.th หรือ user@gmail.com"
                 value={email}
@@ -95,6 +96,7 @@ export const GoogleLoginModal: React.FC<GoogleLoginModalProps> = ({ isOpen, onCl
           <div>
             <label className="text-xs text-slate-400">รหัสผ่าน</label>
             <input
+              id="password"
               type="password"
               name="password"
               autoComplete="current-password"

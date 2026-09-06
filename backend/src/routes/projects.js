@@ -6,7 +6,7 @@ const router = express.Router();
 // GET all projects
 router.get('/', async (req, res) => {
   try {
-    const { data, error } = await supabase.from('projects').select('*').order('id', { ascending: true });
+    let data, error; // const { data, error } = await supabase.from('projects').select('*').order('id', { ascending: true });
     if (!error && data && data.length > 0) {
       return res.json({ success: true, source: 'supabase', data });
     }
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
   };
 
   try {
-    const { data, error } = await supabase.from('projects').insert([newProject]).select();
+    let data, error; // const { data, error } = await supabase.from('projects').insert([newProject]).select();
     if (!error && data) {
       mockData.projects.push(data[0]);
       return res.json({ success: true, data: data[0] });
@@ -52,7 +52,7 @@ router.put('/:id', async (req, res) => {
   const updates = req.body;
 
   try {
-    const { data, error } = await supabase.from('projects').update(updates).eq('id', id).select();
+    let data, error; // const { data, error } = await supabase.from('projects').update(updates).eq('id', id).select();
     if (!error && data) {
       return res.json({ success: true, data: data[0] });
     }

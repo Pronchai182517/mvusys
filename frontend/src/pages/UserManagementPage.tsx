@@ -105,9 +105,9 @@ export const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentU
   }
 
   const filteredUsers = users.filter(u => {
-    const matchSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        u.department.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchSearch = (u.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        (u.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                        (u.department || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchStatus = statusFilter === 'all' || (u.status || 'Active') === statusFilter;
     return matchSearch && matchStatus;
   });
@@ -179,7 +179,7 @@ export const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentU
                 {filteredUsers.map(user => {
                   const userStatus = user.status || 'Active';
                   const isDepartmentScoped = (user.access_scope || 'all') === 'department_only';
-                  const allowedDepts = user.allowed_departments || [user.department];
+                  const allowedDepts = user.allowed_departments || (user.department ? [user.department] : []);
 
                   return (
                     <tr key={user.id} className="hover:bg-slate-900/40 transition-colors">
@@ -200,7 +200,7 @@ export const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentU
                           </span>
                         </div>
                         <div className="text-[10px] text-slate-400 max-w-xs truncate">
-                          {allowedDepts.join(', ')}
+                          {Array.isArray(allowedDepts) ? allowedDepts.join(', ') : ''}
                         </div>
                       </td>
                       <td className="px-4 py-3.5">

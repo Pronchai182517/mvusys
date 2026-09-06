@@ -19,6 +19,10 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  
+  // Simulation states
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   if (!isOpen) return null;
 
@@ -41,12 +45,7 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
 
       if (res.success) {
         setSuccessMsg(res.message);
-        setTimeout(() => {
-          onClose();
-          setSuccessMsg('');
-          setName('');
-          setEmail('');
-        }, 2000);
+        setEmailSent(true);
       } else {
         setErrorMsg(res.message || 'ไม่สามารถลงทะเบียนได้');
       }
@@ -54,6 +53,30 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
       setErrorMsg('เกิดข้อผิดพลาดในการเชื่อมต่อระบบลงทะเบียน');
     }
     setLoading(false);
+  };
+
+  const handleSimulateEmailVerification = async () => {
+    setIsVerifying(true);
+    setErrorMsg('');
+    try {
+      const res = await api.verifyEmail(email);
+      if (res.success) {
+        setSuccessMsg('✅ ยืนยันอีเมลสำเร็จ! คุณสามารถเข้าสู่ระบบได้ทันที');
+        setTimeout(() => {
+          onClose();
+          // Reset states
+          setEmailSent(false);
+          setSuccessMsg('');
+          setName('');
+          setEmail('');
+        }, 2500);
+      } else {
+        setErrorMsg(res.message || 'การยืนยันอีเมลล้มเหลว');
+      }
+    } catch (err) {
+      setErrorMsg('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์');
+    }
+    setIsVerifying(false);
   };
 
   return (
@@ -84,14 +107,44 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
           </div>
         )}
 
-        {successMsg && (
+        {successMsg && !emailSent && (
           <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
             <CheckCircle className="w-4 h-4 shrink-0 text-emerald-400" />
             <span>{successMsg}</span>
           </div>
         )}
 
-        <form onSubmit={handleRegisterSubmit} className="space-y-3">
+        {emailSent ? (
+          <div className="space-y-4 animate-fadeIn">
+            <div className="p-4 rounded-2xl bg-slate-900 border border-emerald-500/40 text-center space-y-3">
+              <Mail className="w-8 h-8 text-emerald-400 mx-auto" />
+              <h4 className="text-white font-bold text-sm">ตรวจสอบกล่องจดหมายของคุณ</h4>
+              <p className="text-xs text-slate-400">
+                เราได้ส่งลิงก์ยืนยันตัวตนไปที่ <span className="text-emerald-400 font-mono">{email}</span> แล้ว
+              </p>
+              
+              <div className="pt-2 border-t border-slate-800">
+                <p className="text-[10px] text-amber-500/80 mb-2 font-mono">
+                  [ระบบจำลอง]: คลิกลิงก์ด้านล่างเพื่อจำลองการยืนยันอีเมล
+                </p>
+                <button
+                  onClick={handleSimulateEmailVerification}
+                  disabled={isVerifying}
+                  className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02]"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>{isVerifying ? 'กำลังตรวจสอบ...' : 'จำลองการคลิกลิงก์ยืนยันในอีเมล'}</span>
+                </button>
+              </div>
+            </div>
+            {successMsg && isVerifying === false && (
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs text-center font-bold">
+                {successMsg}
+              </div>
+            )}
+          </div>
+        ) : (
+          <form onSubmit={handleRegisterSubmit} className="space-y-3">
           {/* Direct Google SSO Register Authen */}
           <div className="p-3 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-1.5 text-center">
             <button
@@ -185,7 +238,6 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
               <option value="executive">ผู้บริหาร (Executive View)</option>
               <option value="project_lead">ผู้รับผิดชอบโครงการ (Project Lead)</option>
               <option value="tracking_officer">เจ้าหน้าที่ติดตามประเมินผล (Tracking Officer)</option>
-              <option value="admin">ผู้ดูแลระบบ (Admin)</option>
             </select>
           </div>
 
@@ -199,10 +251,11 @@ export const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose })
               <span>{loading ? 'กำลังส่งข้อมูล...' : 'ยื่นขอลงทะเบียนสมาชิกด้วย Google Authen'}</span>
             </button>
           </div>
-        </form>
+          </form>
+        )}
 
-        <div className="text-[11px] text-slate-500 text-center border-t border-slate-800/80 pt-2">
-          🛡️ ข้อมูลจะถูกส่งเข้าสู่ระบบรอการตรวจสอบสิทธิ์และอนุมัติโดย Admin
+        <div className="text-[11px] text-slate-500 text-center border-t border-slate-800/80 pt-2 mt-4">
+          🛡️ กรุณาใช้อีเมลจริง เนื่องจากต้องยืนยันตัวตน
         </div>
       </div>
     </div>

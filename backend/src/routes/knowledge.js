@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const { data, error } = await supabase.from('knowledge_base').select('*').order('id', { ascending: true });
+    let data, error; // const { data, error } = await supabase.from('knowledge_base').select('*').order('id', { ascending: true });
     if (!error && data && data.length > 0) {
       return res.json({ success: true, source: 'supabase', data });
     }
@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
   };
 
   try {
-    const { data, error } = await supabase.from('knowledge_base').insert([newKb]).select();
+    let data, error; // const { data, error } = await supabase.from('knowledge_base').insert([newKb]).select();
     if (!error && data) {
       mockData.knowledge_base.push(data[0]);
       return res.json({ success: true, data: data[0] });

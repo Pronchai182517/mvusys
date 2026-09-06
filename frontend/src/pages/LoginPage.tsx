@@ -7,6 +7,7 @@ interface LoginPageProps {
   onLoginSuccess: (user: User) => void;
   onOpenGoogleLogin: () => void;
   onOpenRegister: () => void;
+  onAdminLoginClick: () => void;
 }
 
 const PRESET_USERS: User[] = [
@@ -25,7 +26,7 @@ const GoogleIcon: React.FC = () => (
   </svg>
 );
 
-export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onOpenGoogleLogin, onOpenRegister }) => {
+export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onOpenGoogleLogin, onOpenRegister, onAdminLoginClick }) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -111,6 +112,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onOpenGoog
             </button>
           </div>
         </form>
+
+        <button
+          onClick={onAdminLoginClick}
+          className="w-full py-2.5 rounded-xl border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 text-rose-400 font-medium text-xs flex items-center justify-center gap-1.5 transition-colors"
+        >
+          <ShieldCheck className="w-4 h-4" /> <span>เข้าสู่ระบบเฉพาะผู้ดูแลระบบ (Admin Login)</span>
+        </button>
 
         {/* System Security Badges */}
         <div className="pt-2 flex items-center justify-center gap-4 text-[11px] text-slate-500 font-mono border-t border-slate-800/80">
